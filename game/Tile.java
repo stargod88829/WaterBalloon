@@ -22,7 +22,7 @@ public class Tile {
 	public int getObs(){return obs;}
 	//0: Frame, 1: RedBlock, 2: OrangeBlock
 	//3: Box, 4: Bushes, 5: Non-Destroyable
-	//-1: path
+	//-1: path7
 	public void setObs(int num){obs= num; front= GameController.getObstacle(obs);}
 	public Image getFront(){return front;}
 	public void setFront(Image thing){front= thing;}
