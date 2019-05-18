@@ -7,6 +7,11 @@ import java.util.Scanner;
 import java.util.stream.Stream;
 import java.util.Vector;
 
+import javafx.beans.binding.BooleanBinding;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.event.ActionEvent;
 import javafx.scene.input.MouseEvent;
@@ -26,6 +31,9 @@ public class GameController {
 	// @FXML private Button downBtn;
 	// @FXML private Button leftBtn;
 	// @FXML private Button rightBtn;
+
+	public final BooleanProperty[] isPressed = new BooleanProperty[5];
+	public final BooleanBinding[][] bothPressed = new BooleanBinding[5][5];
 
 	private boolean inObsTest= false;
 	private boolean inKBTest= true;
@@ -48,6 +56,38 @@ public class GameController {
 
 	public void initialize() {
 
+		for(int i= Player.CENTER; i<= Player.RIGHT; i++) {
+			isPressed[i] = new SimpleBooleanProperty(false);
+		}
+		for(int i= Player.CENTER; i<= Player.RIGHT; i++){
+			for (int j= Player.CENTER; j<= Player.RIGHT; j++){
+				bothPressed[i][j]
+						= isPressed[i].and(isPressed[j]);
+			}
+		}
+		bothPressed[Player.UP][Player.LEFT].addListener(
+			(obs, werePressed, arePressed) -> {
+				System.out.println("UP + LEFT");
+				System.out.println(arePressed ?"true":"false");
+			}
+		);
+		bothPressed[Player.UP][Player.RIGHT].addListener(
+			(obs, werePressed, arePressed) -> {
+				System.out.println("UP + RIGHT");
+			}
+		);
+		bothPressed[Player.DOWN][Player.LEFT].addListener(
+			(obs, werePressed, arePressed) -> {
+				System.out.println("DOWN + LEFT");
+			}
+		);
+		bothPressed[Player.DOWN][Player.RIGHT].addListener(
+			(obs, werePressed, arePressed) -> {
+				System.out.println("DOWN + RIGHT");
+			}
+		);
+
+
 		drawingCanvas.getParent().addEventFilter(KeyEvent.KEY_PRESSED,
 				event -> {
 					keyPressed(event);
@@ -69,6 +109,12 @@ public class GameController {
 		p1.drawMe(drawingCanvas);
 	}
 
+	ChangeListener<Boolean> boolHandler= new ChangeListener<Boolean>() {
+		@Override
+		public void changed(ObservableValue<? extends Boolean> observableValue, Boolean aBoolean, Boolean t1) {
+
+		}
+	};
 
 
 	@FXML
@@ -184,6 +230,7 @@ public class GameController {
 		//System.out.println("keyPressed()");
 		if(!inKBTest)
 			return;
+//		System.out.println(""+e.getCode().toString());
 
 //
 		p1.checkAround();
@@ -191,7 +238,8 @@ public class GameController {
 			case UP:
 			case KP_UP:
 			case W:
-				System.out.println("\tUP");
+//				System.out.println("\tUP");
+				isPressed[Player.UP].set(true);
 				if( (p1.obsStatus[Player.UP]==-1 || p1.obsStatus[Player.UP]==4) && p1.bombStatus[Player.UP]==0)
 				{
 					p1.move(Player.UP);
@@ -204,7 +252,8 @@ public class GameController {
 			case DOWN:
 			case KP_DOWN:
 			case S:
-				System.out.println("\tDOWN");
+//				System.out.println("\tDOWN");
+				isPressed[Player.DOWN].set(true);
 				if( (p1.obsStatus[Player.DOWN]==-1 || p1.obsStatus[Player.DOWN]==4) && p1.bombStatus[Player.DOWN]==0)
 				{
 					p1.move(Player.DOWN);
@@ -217,7 +266,8 @@ public class GameController {
 			case LEFT:
 			case KP_LEFT:
 			case A:
-				System.out.println("\tLEFT");
+//				System.out.println("\tLEFT");
+				isPressed[Player.LEFT].set(true);
 				if( (p1.obsStatus[Player.LEFT]==-1 || p1.obsStatus[Player.LEFT]==4) && p1.bombStatus[Player.LEFT]==0)
 				{
 					p1.move(Player.LEFT);
@@ -230,7 +280,8 @@ public class GameController {
 			case RIGHT:
 			case KP_RIGHT:
 			case D:
-				System.out.println("\tRIGHT");
+//				System.out.println("\tRIGHT");
+				isPressed[Player.RIGHT].set(true);
 				if( (p1.obsStatus[Player.RIGHT]==-1 || p1.obsStatus[Player.RIGHT]==4) && p1.bombStatus[Player.RIGHT]==0)
 				{
 					p1.move(Player.RIGHT);
@@ -241,7 +292,7 @@ public class GameController {
 				}
 				break;
 			case SPACE:
-				System.out.println("\tSPACE");
+//				System.out.println("\tSPACE");
 				tileVec.get(17*p1.y+p1.x).setBombStatus(1);
 				renderTiles();
 				if(p1.obsStatus[Player.CENTER]==-1)
@@ -262,6 +313,36 @@ public class GameController {
 	private void keyReleased(KeyEvent e) {
 		if(!inKBTest)
 			return;
+
+		p1.checkAround();
+		switch (e.getCode()) {
+			case UP:
+			case KP_UP:
+			case W:
+//				System.out.println("\tUP");
+				isPressed[Player.UP].set(false);
+				break;
+			case DOWN:
+			case KP_DOWN:
+			case S:
+//				System.out.println("\tDOWN");
+				isPressed[Player.DOWN].set(false);
+				break;
+			case LEFT:
+			case KP_LEFT:
+			case A:
+//				System.out.println("\tLEFT");
+				isPressed[Player.LEFT].set(false);
+				break;
+			case RIGHT:
+			case KP_RIGHT:
+			case D:
+//				System.out.println("\tRIGHT");
+				isPressed[Player.RIGHT].set(false);
+				break;
+			default:
+				break;
+		}
 	}
 
 	@FXML
