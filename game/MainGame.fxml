@@ -17,23 +17,23 @@
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="610.0" prefWidth="150.0">
                <children>
                   <Button fx:id="obsTestBtn" focusTraversable="false" layoutX="14.0" layoutY="30.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#obsTestBtnPressed" prefHeight="25.0" prefWidth="121.0" style="-fx-border-color: LIGHTGREEN;" text="StartObsTest" />
-                  <Button fx:id="kbTestBtn" focusTraversable="false" layoutX="14.0" layoutY="73.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#kbTestBtnPressed" prefHeight="25.0" prefWidth="121.0" style="-fx-border-color: LIGHTGREEN;" text="StartKBTest" />
-                  <Button id="upBtn" layoutX="55.0" layoutY="139.0" mnemonicParsing="false" onAction="#navBtnPressed" prefHeight="40.0" prefWidth="40.0" text="▲">
+                  <Button fx:id="kbTestBtn" disable="true" focusTraversable="false" layoutX="14.0" layoutY="73.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#kbTestBtnPressed" prefHeight="25.0" prefWidth="121.0" style="-fx-border-color: LIGHTGREEN;" text="StartKBTest" />
+                  <Button id="upBtn" disable="true" layoutX="55.0" layoutY="139.0" mnemonicParsing="false" onAction="#navBtnPressed" prefHeight="40.0" prefWidth="40.0" text="▲">
                      <font>
                         <Font size="14.0" />
                      </font>
                   </Button>
-                  <Button id="downBtn" layoutX="55.0" layoutY="179.0" mnemonicParsing="false" onAction="#navBtnPressed" prefHeight="40.0" prefWidth="40.0" text="▼">
+                  <Button id="downBtn" disable="true" layoutX="55.0" layoutY="179.0" mnemonicParsing="false" onAction="#navBtnPressed" prefHeight="40.0" prefWidth="40.0" text="▼">
                      <font>
                         <Font size="14.0" />
                      </font>
                   </Button>
-                  <Button id="rightBtn" layoutX="95.0" layoutY="179.0" mnemonicParsing="false" onAction="#navBtnPressed" prefHeight="40.0" prefWidth="40.0" text="►">
+                  <Button id="rightBtn" disable="true" layoutX="95.0" layoutY="179.0" mnemonicParsing="false" onAction="#navBtnPressed" prefHeight="40.0" prefWidth="40.0" text="►">
                      <font>
                         <Font size="14.0" />
                      </font>
                   </Button>
-                  <Button id="leftBtn" layoutX="15.0" layoutY="179.0" mnemonicParsing="false" onAction="#navBtnPressed" prefHeight="40.0" prefWidth="40.0" text="◄">
+                  <Button id="leftBtn" disable="true" layoutX="15.0" layoutY="179.0" mnemonicParsing="false" onAction="#navBtnPressed" prefHeight="40.0" prefWidth="40.0" text="◄">
                      <font>
                         <Font size="14.0" />
                      </font>

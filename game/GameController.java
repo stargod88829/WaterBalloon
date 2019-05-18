@@ -28,11 +28,13 @@ public class GameController {
 	// @FXML private Button rightBtn;
 
 	private boolean inObsTest= false;
-	private boolean inKBTest= false;
+	private boolean inKBTest= true;
+
 
 	public static int meX=1;
 	public static int meY=1;
-	public static Image meImg= new Image("image/ME.png");
+	private Image p1Img= new Image("image/ME.png");
+	private Player p1=new Player(1,1, p1Img);
 
 	private static Image tileSet= new Image("image/Dungeon_Tileset.png");
 	private static PixelReader backReader = tileSet.getPixelReader();
@@ -52,6 +54,12 @@ public class GameController {
 					event.consume();
 				}
 		);
+		drawingCanvas.getParent().addEventFilter(KeyEvent.KEY_RELEASED,
+				event -> {
+					keyReleased(event);
+					event.consume();
+				}
+		);
 
 		System.out.println(drawingCanvas.getParent().toString());
 
@@ -60,6 +68,8 @@ public class GameController {
 
 		drawMe();
 	}
+
+
 
 	@FXML
 	private void obsTestBtnPressed(ActionEvent e) {
@@ -176,18 +186,18 @@ public class GameController {
 			return;
 
 		//Obstacle status around
-		int nowObsStatus= tileVec.get(meX+17*meY).getObs();
-		int upObsStatus= tileVec.get(meX+17*(meY-1)).getObs();
-		int downObsStatus= tileVec.get(meX+17*(meY+1)).getObs();
-		int leftObsStatus= tileVec.get(meX-1+17*meY).getObs();
-		int rightObsStatus= tileVec.get(meX+1+17*meY).getObs();
+		int nowObsStatus= tileVec.get(p1.x+17*p1.y).getObs();
+		int upObsStatus= tileVec.get(p1.x+17*(p1.y-1)).getObs();
+		int downObsStatus= tileVec.get(p1.x+17*(p1.y+1)).getObs();
+		int leftObsStatus= tileVec.get(p1.x-1+17*p1.y).getObs();
+		int rightObsStatus= tileVec.get(p1.x+1+17*p1.y).getObs();
 
 		//Bomb status around
-		int nowBombStatus= tileVec.get(meX+17*meY).getBombStatus();
-		int upBombStatus= tileVec.get(meX+17*(meY-1)).getBombStatus();
-		int downBombStatus= tileVec.get(meX+17*(meY+1)).getBombStatus();
-		int leftBombStatus= tileVec.get(meX-1+17*meY).getBombStatus();
-		int rightBombStatus= tileVec.get(meX+1+17*meY).getBombStatus();
+		int nowBombStatus= tileVec.get(p1.x+17*p1.y).getBombStatus();
+		int upBombStatus= tileVec.get(p1.x+17*(p1.y-1)).getBombStatus();
+		int downBombStatus= tileVec.get(p1.x+17*(p1.y+1)).getBombStatus();
+		int leftBombStatus= tileVec.get(p1.x-1+17*p1.y).getBombStatus();
+		int rightBombStatus= tileVec.get(p1.x+1+17*p1.y).getBombStatus();
 
 		switch (e.getCode()) {
 			case UP:
@@ -196,8 +206,8 @@ public class GameController {
 				System.out.println("\tUP");
 				if( (upObsStatus==-1 || upObsStatus==4) && upBombStatus==0)
 				{
-					meX=meX;
-					meY=meY-1;
+//					p1.x=p1.x;
+					p1.y=p1.y-1;
 					//print the character
 					renderTiles(tileVec);
 					if(upObsStatus==-1)
@@ -210,8 +220,8 @@ public class GameController {
 				System.out.println("\tDOWN");
 				if( (downObsStatus==-1 || downObsStatus==4) && downBombStatus==0)
 				{
-					meX=meX;
-					meY=meY+1;
+//					p1.x=p1.x;
+					p1.y=p1.y+1;
 					//print the character
 					renderTiles(tileVec);
 					if(downObsStatus==-1)
@@ -224,8 +234,8 @@ public class GameController {
 				System.out.println("\tLEFT");
 				if( (leftObsStatus==-1 || leftObsStatus==4) && leftBombStatus==0)
 				{
-					meX=meX-1;
-					meY=meY;
+					p1.x=p1.x-1;
+//					p1.y=p1.y;
 					//print the character
 					renderTiles(tileVec);
 					if(leftObsStatus==-1)
@@ -238,8 +248,8 @@ public class GameController {
 				System.out.println("\tRIGHT");
 				if( (rightObsStatus==-1 || rightObsStatus==4) && rightBombStatus==0)
 				{
-					meX=meX+1;
-					meY=meY;
+					p1.x=p1.x+1;
+//					p1.y=p1.y;
 					//print the character
 					renderTiles(tileVec);
 					if(rightObsStatus==-1)
@@ -248,14 +258,14 @@ public class GameController {
 				break;
 			case SPACE:
 				System.out.println("\tSPACE");
-				tileVec.get(17*meY+meX).setBombStatus(1);
+				tileVec.get(17*p1.y+p1.x).setBombStatus(1);
 				renderTiles(tileVec);
 				if(nowObsStatus==-1)
 					drawMe();
 
-				Bomb bomb1= new Bomb(drawingCanvas);
-				bomb1.putBomb(meX, meY);
-				tileVec= bomb1.getTileVec();
+				Bomb bomb= new Bomb(p1,drawingCanvas);
+				bomb.putBomb(p1.x, p1.y);
+				tileVec= bomb.getTileVec();
 				//model.getBombs().add(bomb1);
 				//renderTiles(tileVec);
 				//bomb1= null;
@@ -263,6 +273,11 @@ public class GameController {
 			default:
 				break;
 		}
+	}
+
+	private void keyReleased(KeyEvent e) {
+		if(!inKBTest)
+			return;
 	}
 
 	@FXML
@@ -395,14 +410,14 @@ public class GameController {
 
 	public void drawMe(){
 		GraphicsContext gb = drawingCanvas.getGraphicsContext2D();
-		gb.drawImage(meImg, canvasXOffset+40*meX, canvasYOffset+40*meY, 40, 40);
+		gb.drawImage(p1.meImg, canvasXOffset+40*p1.x, canvasYOffset+40*p1.y, 40, 40);
 	}
 	public static Vector<Tile> getTileVec(){
 		return tileVec;
 	}
-	public Canvas getCanvas(){
-		return drawingCanvas;
-	}
+//	public Canvas getCanvas(){
+//		return drawingCanvas;
+//	}
 	//private static GraphicsContext gbAlt = drawingCanvas.getGraphicsContext2D();
 	// public static GraphicsContext getGC(){
 	//

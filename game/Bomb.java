@@ -11,21 +11,23 @@ import java.util.TimerTask;
 public class Bomb{
 	private int x;
 	private int y;
+	private Player player;
 	private Canvas drawingCanvas;
 	private long timeLeft= 3500;
 	private static Vector<Tile> tileVec;
 
 	public static Image pic= new Image("image/waterball/waterball.png");
 
-	Bomb(Canvas drawingCanvas){
+	Bomb(Player player, Canvas drawingCanvas){
+		this.player= player;
 		tileVec= GameController.getTileVec();
 		this.drawingCanvas= drawingCanvas;
 	}
-	Bomb(int xPos, int yPos, Canvas drawingCanvas){
-		x= xPos; y= yPos;
-		tileVec= GameController.getTileVec();
-		this.drawingCanvas= drawingCanvas;
-	}
+//	Bomb(int xPos, int yPos, Canvas drawingCanvas){
+//		x= xPos; y= yPos;
+//		tileVec= GameController.getTileVec();
+//		this.drawingCanvas= drawingCanvas;
+//	}
 
 	public void putBomb(int xPos, int yPos){
 		Timer timer= new Timer(true);
@@ -67,7 +69,7 @@ public class Bomb{
 					tileVec.get(y*17+x).setBombStatus(0);
 				}//center
 				renderTiles(tileVec);
-				if(tileVec.get(GameController.meY*17+GameController.meX).getObs() != 4){
+				if(tileVec.get(player.y*17+player.x).getObs() != 4){
 					drawMe();
 				}
 				//drawMe();
@@ -110,8 +112,8 @@ public class Bomb{
 
 	public void drawMe(){
 		GraphicsContext gb = drawingCanvas.getGraphicsContext2D();
-		gb.drawImage(GameController.meImg, GameController.canvasXOffset+40*GameController.meX,
-			GameController.canvasYOffset+40*GameController.meY, 40, 40);
+		gb.drawImage(player.meImg, GameController.canvasXOffset+40*player.x,
+			GameController.canvasYOffset+40*player.y, 40, 40);
 	}
 
 	// public void drawBomb(){
