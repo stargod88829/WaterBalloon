@@ -116,6 +116,7 @@ public class Bomb{
 			GameController.canvasYOffset+40*player.y, 40, 40);
 	}
 
+
 	// public void drawBomb(){
 	// 	GraphicsContext gb = drawingCanvas.getGraphicsContext2D();
 	// 	gb.drawImage(pic, GameController.canvasXOffset+40*GameController.meX,
