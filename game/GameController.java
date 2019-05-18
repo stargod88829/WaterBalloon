@@ -44,7 +44,7 @@ public class GameController {
 	private String mapDataStr;
 	private String obstacleDataStr;
 	private String bombsDataStr;
-	private static Vector<Tile> tileVec= new Vector<>();
+	public static Vector<Tile> tileVec= new Vector<>();
 
 	public void initialize() {
 
@@ -64,9 +64,9 @@ public class GameController {
 		System.out.println(drawingCanvas.getParent().toString());
 
 		loadDataFile("game/MapData.txt", "game/ObstacleData.txt", "game/BombsData.txt");
-		renderTiles(tileVec);
+		renderTiles();
 
-		drawMe();
+		p1.drawMe(drawingCanvas);
 	}
 
 
@@ -105,38 +105,38 @@ public class GameController {
 			System.out.println("\tUP");
 			if(tileVec.get(meX+17*(meY-1)).getObs()==-1)
 			{
-				meX=meX;
+//				meX=meX;
 				meY=meY-1;
 				//print the character
-				renderTiles(tileVec);
-				drawMe();
+				renderTiles();
+				p1.drawMe(drawingCanvas);
 			}
 			else if(tileVec.get(meX+17*(meY-1)).getObs()==4)
 			{
-				meX=meX;
+//				meX=meX;
 				meY=meY-1;
 				//print the character
-				renderTiles(tileVec);
-//				drawMe();
+				renderTiles();
+//				drawMe(drawingCanvas);
 			}
 		}
 		else if(eStr.contains("downBtn")){
 			System.out.println("\tDOWN");
 			if(tileVec.get(meX+17*(meY+1)).getObs()==-1)
 			{
-				meX=meX;
+//				meX=meX;
 				meY=meY+1;
 				//print the character
-				renderTiles(tileVec);
-				drawMe();
+				renderTiles();
+				p1.drawMe(drawingCanvas);
 			}
 			else if(tileVec.get(meX+17*(meY+1)).getObs()==4)
 			{
-				meX=meX;
+//				meX=meX;
 				meY=meY+1;
 				//print the character
-				renderTiles(tileVec);
-//				drawMe();
+				renderTiles();
+//				p1.drawMe(drawingCanvas);
 			}
 		}
 		else if(eStr.contains("leftBtn")){
@@ -144,18 +144,18 @@ public class GameController {
 			if(tileVec.get(meX-1+17*meY).getObs()==-1)
 			{
 				meX=meX-1;
-				meY=meY;
+//				meY=meY;
 				//print the character
-				renderTiles(tileVec);
-				drawMe();
+				renderTiles();
+				p1.drawMe(drawingCanvas);
 			}
 			else if(tileVec.get(meX-1+17*meY).getObs()==4)
 			{
 				meX=meX-1;
-				meY=meY;
+//				meY=meY;
 				//print the character
-				renderTiles(tileVec);
-//				drawMe();
+				renderTiles();
+//				p1.drawMe(drawingCanvas);
 			}
 		}
 		else if(eStr.contains("rightBtn")){
@@ -163,18 +163,18 @@ public class GameController {
 			if(tileVec.get(meX+1+17*meY).getObs()==-1)
 			{
 				meX=meX+1;
-				meY=meY;
+//				meY=meY;
 				//print the character
-				renderTiles(tileVec);
-				drawMe();
+				renderTiles();
+				p1.drawMe(drawingCanvas);
 			}
 			else if(tileVec.get(meX+1+17*meY).getObs()==4)
 			{
 				meX=meX+1;
-				meY=meY;
+//				meY=meY;
 				//print the character
-				renderTiles(tileVec);
-//				drawMe();
+				renderTiles();
+//				p1.drawMe();
 			}
 		}
 	}
@@ -185,87 +185,71 @@ public class GameController {
 		if(!inKBTest)
 			return;
 
-		//Obstacle status around
-		int nowObsStatus= tileVec.get(p1.x+17*p1.y).getObs();
-		int upObsStatus= tileVec.get(p1.x+17*(p1.y-1)).getObs();
-		int downObsStatus= tileVec.get(p1.x+17*(p1.y+1)).getObs();
-		int leftObsStatus= tileVec.get(p1.x-1+17*p1.y).getObs();
-		int rightObsStatus= tileVec.get(p1.x+1+17*p1.y).getObs();
-
-		//Bomb status around
-		int nowBombStatus= tileVec.get(p1.x+17*p1.y).getBombStatus();
-		int upBombStatus= tileVec.get(p1.x+17*(p1.y-1)).getBombStatus();
-		int downBombStatus= tileVec.get(p1.x+17*(p1.y+1)).getBombStatus();
-		int leftBombStatus= tileVec.get(p1.x-1+17*p1.y).getBombStatus();
-		int rightBombStatus= tileVec.get(p1.x+1+17*p1.y).getBombStatus();
-
+//
+		p1.checkAround();
 		switch (e.getCode()) {
 			case UP:
 			case KP_UP:
 			case W:
 				System.out.println("\tUP");
-				if( (upObsStatus==-1 || upObsStatus==4) && upBombStatus==0)
+				if( (p1.obsStatus[Player.UP]==-1 || p1.obsStatus[Player.UP]==4) && p1.bombStatus[Player.UP]==0)
 				{
-//					p1.x=p1.x;
-					p1.y=p1.y-1;
+					p1.move(Player.UP);
 					//print the character
-					renderTiles(tileVec);
-					if(upObsStatus==-1)
-						drawMe();
+					renderTiles();
+					if(p1.obsStatus[Player.UP]==-1)
+						p1.drawMe(drawingCanvas);
 				}
 				break;
 			case DOWN:
 			case KP_DOWN:
 			case S:
 				System.out.println("\tDOWN");
-				if( (downObsStatus==-1 || downObsStatus==4) && downBombStatus==0)
+				if( (p1.obsStatus[Player.DOWN]==-1 || p1.obsStatus[Player.DOWN]==4) && p1.bombStatus[Player.DOWN]==0)
 				{
-//					p1.x=p1.x;
-					p1.y=p1.y+1;
+					p1.move(Player.DOWN);
 					//print the character
-					renderTiles(tileVec);
-					if(downObsStatus==-1)
-						drawMe();
+					renderTiles();
+					if(p1.obsStatus[Player.DOWN]==-1)
+						p1.drawMe(drawingCanvas);
 				}
 				break;
 			case LEFT:
 			case KP_LEFT:
 			case A:
 				System.out.println("\tLEFT");
-				if( (leftObsStatus==-1 || leftObsStatus==4) && leftBombStatus==0)
+				if( (p1.obsStatus[Player.LEFT]==-1 || p1.obsStatus[Player.LEFT]==4) && p1.bombStatus[Player.LEFT]==0)
 				{
-					p1.x=p1.x-1;
-//					p1.y=p1.y;
+					p1.move(Player.LEFT);
 					//print the character
-					renderTiles(tileVec);
-					if(leftObsStatus==-1)
-						drawMe();
+					renderTiles();
+					if(p1.obsStatus[Player.LEFT]==-1)
+						p1.drawMe(drawingCanvas);
 				}
 				break;
 			case RIGHT:
 			case KP_RIGHT:
 			case D:
 				System.out.println("\tRIGHT");
-				if( (rightObsStatus==-1 || rightObsStatus==4) && rightBombStatus==0)
+				if( (p1.obsStatus[Player.RIGHT]==-1 || p1.obsStatus[Player.RIGHT]==4) && p1.bombStatus[Player.RIGHT]==0)
 				{
-					p1.x=p1.x+1;
-//					p1.y=p1.y;
+					p1.move(Player.RIGHT);
 					//print the character
-					renderTiles(tileVec);
-					if(rightObsStatus==-1)
-						drawMe();
+					renderTiles();
+					if(p1.obsStatus[Player.RIGHT]==-1)
+						p1.drawMe(drawingCanvas);
 				}
 				break;
 			case SPACE:
 				System.out.println("\tSPACE");
 				tileVec.get(17*p1.y+p1.x).setBombStatus(1);
-				renderTiles(tileVec);
-				if(nowObsStatus==-1)
-					drawMe();
+				renderTiles();
+				if(p1.obsStatus[Player.CENTER]==-1)
+					p1.drawMe(drawingCanvas);
 
 				Bomb bomb= new Bomb(p1,drawingCanvas);
 				bomb.putBomb(p1.x, p1.y);
-				tileVec= bomb.getTileVec();
+//				tileVec= bomb.getTileVec();
 				//model.getBombs().add(bomb1);
 				//renderTiles(tileVec);
 				//bomb1= null;
@@ -328,8 +312,7 @@ public class GameController {
 		}
 	}
 
-	public void renderTiles(Vector<Tile> tileVec){
-
+	public void renderTiles(){
 		GraphicsContext gc = drawingCanvas.getGraphicsContext2D();
 		if(tileVec.size() < 15*17){
 			gc.drawImage(new Image("image/Error.png"),
@@ -391,8 +374,7 @@ public class GameController {
 		}
 	}
 
-	public static String readFile(String filePath)
-    {
+	public static String readFile(String filePath) {
         StringBuilder contentBuilder = new StringBuilder();
 
         try (
@@ -408,13 +390,13 @@ public class GameController {
         return contentBuilder.toString();
     }
 
-	public void drawMe(){
-		GraphicsContext gb = drawingCanvas.getGraphicsContext2D();
-		gb.drawImage(p1.meImg, canvasXOffset+40*p1.x, canvasYOffset+40*p1.y, 40, 40);
-	}
-	public static Vector<Tile> getTileVec(){
-		return tileVec;
-	}
+//	public void drawMe(){
+//		GraphicsContext gb = drawingCanvas.getGraphicsContext2D();
+//		gb.drawImage(p1.meImg, canvasXOffset+40*p1.x, canvasYOffset+40*p1.y, 40, 40);
+//	}
+//	public static Vector<Tile> getTileVec(){
+//		return tileVec;
+//	}
 //	public Canvas getCanvas(){
 //		return drawingCanvas;
 //	}
