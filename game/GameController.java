@@ -3,7 +3,9 @@ package game;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.HashSet;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.stream.Stream;
 import java.util.Vector;
 
@@ -14,6 +16,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.event.ActionEvent;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.control.Button;
@@ -32,11 +35,12 @@ public class GameController {
 	// @FXML private Button leftBtn;
 	// @FXML private Button rightBtn;
 
-	public final BooleanProperty[] isPressed = new BooleanProperty[5];
-	public final BooleanBinding[][] bothPressed = new BooleanBinding[5][5];
+//	public final BooleanProperty[] isPressed = new BooleanProperty[5];
+//	public final BooleanBinding[][] bothPressed = new BooleanBinding[5][5];
 
 	private boolean inObsTest= false;
 	private boolean inKBTest= true;
+	public static final Set<KeyCode> pressed = new HashSet<KeyCode>();
 
 
 	public static int meX=1;
@@ -56,38 +60,38 @@ public class GameController {
 
 	public void initialize() {
 
-		for(int i= Player.CENTER; i<= Player.RIGHT; i++) {
-			isPressed[i] = new SimpleBooleanProperty(false);
-		}
-		for(int i= Player.CENTER; i<= Player.RIGHT; i++){
-			for (int j= Player.CENTER; j<= Player.RIGHT; j++){
-				bothPressed[i][j]
-						= isPressed[i].and(isPressed[j]);
-			}
-		}
-		bothPressed[Player.UP][Player.LEFT].addListener(
-			(obs, werePressed, arePressed) -> {
-				System.out.println("UP + LEFT");
-				System.out.println(arePressed ?"true":"false");
-			}
-		);
-		bothPressed[Player.UP][Player.RIGHT].addListener(
-			(obs, werePressed, arePressed) -> {
-				System.out.println("UP + RIGHT");
-			}
-		);
-		bothPressed[Player.DOWN][Player.LEFT].addListener(
-			(obs, werePressed, arePressed) -> {
-				System.out.println("DOWN + LEFT");
-			}
-		);
-		bothPressed[Player.DOWN][Player.RIGHT].addListener(
-			(obs, werePressed, arePressed) -> {
-				System.out.println("DOWN + RIGHT");
-			}
-		);
+//		for(int i= Player.CENTER; i<= Player.RIGHT; i++) {
+//			isPressed[i] = new SimpleBooleanProperty(false);
+//		}
+//		for(int i= Player.CENTER; i<= Player.RIGHT; i++){
+//			for (int j= Player.CENTER; j<= Player.RIGHT; j++){
+//				bothPressed[i][j]
+//						= isPressed[i].and(isPressed[j]);
+//			}
+//		}
+//		bothPressed[Player.UP][Player.LEFT].addListener(
+//			(obs, werePressed, arePressed) -> {
+//				System.out.println("UP + LEFT");
+//				System.out.println(arePressed ?"true":"false");
+//			}
+//		);
+//		bothPressed[Player.UP][Player.RIGHT].addListener(
+//			(obs, werePressed, arePressed) -> {
+//				System.out.println("UP + RIGHT");
+//			}
+//		);
+//		bothPressed[Player.DOWN][Player.LEFT].addListener(
+//			(obs, werePressed, arePressed) -> {
+//				System.out.println("DOWN + LEFT");
+//			}
+//		);
+//		bothPressed[Player.DOWN][Player.RIGHT].addListener(
+//			(obs, werePressed, arePressed) -> {
+//				System.out.println("DOWN + RIGHT");
+//			}
+//		);
 
-
+		p1.catchCanvas(drawingCanvas);
 		drawingCanvas.getParent().addEventFilter(KeyEvent.KEY_PRESSED,
 				event -> {
 					keyPressed(event);
@@ -109,16 +113,17 @@ public class GameController {
 		p1.drawMe(drawingCanvas);
 	}
 
-	ChangeListener<Boolean> boolHandler= new ChangeListener<Boolean>() {
-		@Override
-		public void changed(ObservableValue<? extends Boolean> observableValue, Boolean aBoolean, Boolean t1) {
-
-		}
-	};
+//	ChangeListener<Boolean> boolHandler= new ChangeListener<Boolean>() {
+//		@Override
+//		public void changed(ObservableValue<? extends Boolean> observableValue, Boolean aBoolean, Boolean t1) {
+//
+//		}
+//	};
 
 
 	@FXML
 	private void obsTestBtnPressed(ActionEvent e) {
+		System.out.println("Player1 @("+p1.x+","+p1.y+")");
 		if(!inObsTest){
 			obsTestBtn.setStyle("-fx-border-color: RED; ");
 			obsTestBtn.setText("Stop");
@@ -232,117 +237,143 @@ public class GameController {
 			return;
 //		System.out.println(""+e.getCode().toString());
 
+
 //
 		p1.checkAround();
-		switch (e.getCode()) {
-			case UP:
-			case KP_UP:
-			case W:
-//				System.out.println("\tUP");
-				isPressed[Player.UP].set(true);
-				if( (p1.obsStatus[Player.UP]==-1 || p1.obsStatus[Player.UP]==4) && p1.bombStatus[Player.UP]==0)
-				{
-					p1.move(Player.UP);
-					//print the character
-					renderTiles();
-					if(p1.obsStatus[Player.UP]==-1)
-						p1.drawMe(drawingCanvas);
-				}
-				break;
-			case DOWN:
-			case KP_DOWN:
-			case S:
-//				System.out.println("\tDOWN");
-				isPressed[Player.DOWN].set(true);
-				if( (p1.obsStatus[Player.DOWN]==-1 || p1.obsStatus[Player.DOWN]==4) && p1.bombStatus[Player.DOWN]==0)
-				{
-					p1.move(Player.DOWN);
-					//print the character
-					renderTiles();
-					if(p1.obsStatus[Player.DOWN]==-1)
-						p1.drawMe(drawingCanvas);
-				}
-				break;
-			case LEFT:
-			case KP_LEFT:
-			case A:
-//				System.out.println("\tLEFT");
-				isPressed[Player.LEFT].set(true);
-				if( (p1.obsStatus[Player.LEFT]==-1 || p1.obsStatus[Player.LEFT]==4) && p1.bombStatus[Player.LEFT]==0)
-				{
-					p1.move(Player.LEFT);
-					//print the character
-					renderTiles();
-					if(p1.obsStatus[Player.LEFT]==-1)
-						p1.drawMe(drawingCanvas);
-				}
-				break;
-			case RIGHT:
-			case KP_RIGHT:
-			case D:
-//				System.out.println("\tRIGHT");
-				isPressed[Player.RIGHT].set(true);
-				if( (p1.obsStatus[Player.RIGHT]==-1 || p1.obsStatus[Player.RIGHT]==4) && p1.bombStatus[Player.RIGHT]==0)
-				{
-					p1.move(Player.RIGHT);
-					//print the character
-					renderTiles();
-					if(p1.obsStatus[Player.RIGHT]==-1)
-						p1.drawMe(drawingCanvas);
-				}
-				break;
-			case SPACE:
-//				System.out.println("\tSPACE");
-				tileVec.get(17*p1.y+p1.x).setBombStatus(1);
-				renderTiles();
-				if(p1.obsStatus[Player.CENTER]==-1)
-					p1.drawMe(drawingCanvas);
-
-				Bomb bomb= new Bomb(p1,drawingCanvas);
-				bomb.putBomb(p1.x, p1.y);
-//				tileVec= bomb.getTileVec();
-				//model.getBombs().add(bomb1);
-				//renderTiles(tileVec);
-				//bomb1= null;
-				break;
-			default:
-				break;
+		if(pressed.isEmpty()) {
+			pressed.add(e.getCode());
+			System.out.println("NEW KEY");
+			p1.runMoveTimer();
 		}
+		else{
+			if(!pressed.contains(e.getCode())){
+				pressed.add(e.getCode());
+				System.out.println("ADD KEY");
+			}
+		}
+
+//		switch (e.getCode()) {
+//			case UP:
+//			case KP_UP:
+//			case W:
+////				System.out.println("\tUP");
+////				isPressed[Player.UP].set(true);
+//				if( (p1.obsStatus[Player.UP]==-1 || p1.obsStatus[Player.UP]==4) && p1.bombStatus[Player.UP]==0)
+//				{
+//					p1.move(Player.UP);
+//					//print the character
+//					renderTiles();
+//					if(p1.obsStatus[Player.UP]==-1)
+//						p1.drawMe(drawingCanvas);
+//				}
+//				break;
+//			case DOWN:
+//			case KP_DOWN:
+//			case S:
+////				System.out.println("\tDOWN");
+////				isPressed[Player.DOWN].set(true);
+//				if( (p1.obsStatus[Player.DOWN]==-1 || p1.obsStatus[Player.DOWN]==4) && p1.bombStatus[Player.DOWN]==0)
+//				{
+//					p1.move(Player.DOWN);
+//					//print the character
+//					renderTiles();
+//					if(p1.obsStatus[Player.DOWN]==-1)
+//						p1.drawMe(drawingCanvas);
+//				}
+//				break;
+//			case LEFT:
+//			case KP_LEFT:
+//			case A:
+////				System.out.println("\tLEFT");
+////				isPressed[Player.LEFT].set(true);
+//				if( (p1.obsStatus[Player.LEFT]==-1 || p1.obsStatus[Player.LEFT]==4) && p1.bombStatus[Player.LEFT]==0)
+//				{
+//					p1.move(Player.LEFT);
+//					//print the character
+//					renderTiles();
+//					if(p1.obsStatus[Player.LEFT]==-1)
+//						p1.drawMe(drawingCanvas);
+//				}
+//				break;
+//			case RIGHT:
+//			case KP_RIGHT:
+//			case D:
+////				System.out.println("\tRIGHT");
+////				isPressed[Player.RIGHT].set(true);
+//				if( (p1.obsStatus[Player.RIGHT]==-1 || p1.obsStatus[Player.RIGHT]==4) && p1.bombStatus[Player.RIGHT]==0)
+//				{
+//					p1.move(Player.RIGHT);
+//					//print the character
+//					renderTiles();
+//					if(p1.obsStatus[Player.RIGHT]==-1)
+//						p1.drawMe(drawingCanvas);
+//				}
+//				break;
+//			case SPACE:
+////				System.out.println("\tSPACE");
+//				tileVec.get(17*p1.y+p1.x).setBombStatus(1);
+//				renderTiles();
+//				if(p1.obsStatus[Player.CENTER]==-1)
+//					p1.drawMe(drawingCanvas);
+//
+//				Bomb bomb= new Bomb(p1,drawingCanvas);
+//				bomb.putBomb(p1.x, p1.y);
+////				tileVec= bomb.getTileVec();
+//				//model.getBombs().add(bomb1);
+//				//renderTiles(tileVec);
+//				//bomb1= null;
+//				break;
+//			default:
+//				break;
+//		}
+//		renderTiles();
+//		if(p1.obsStatus[Player.CENTER]==-1)
+//			p1.drawMe(drawingCanvas);
 	}
 
 	private void keyReleased(KeyEvent e) {
 		if(!inKBTest)
 			return;
+		pressed.remove(e.getCode());
 
 		p1.checkAround();
-		switch (e.getCode()) {
-			case UP:
-			case KP_UP:
-			case W:
-//				System.out.println("\tUP");
-				isPressed[Player.UP].set(false);
-				break;
-			case DOWN:
-			case KP_DOWN:
-			case S:
-//				System.out.println("\tDOWN");
-				isPressed[Player.DOWN].set(false);
-				break;
-			case LEFT:
-			case KP_LEFT:
-			case A:
-//				System.out.println("\tLEFT");
-				isPressed[Player.LEFT].set(false);
-				break;
-			case RIGHT:
-			case KP_RIGHT:
-			case D:
-//				System.out.println("\tRIGHT");
-				isPressed[Player.RIGHT].set(false);
-				break;
-			default:
-				break;
+		if(pressed.isEmpty()) {
+			p1.stopMoveTimer();
+			System.out.println("NO KEYS");
 		}
+//		switch (e.getCode()) {
+//			case UP:
+//			case KP_UP:
+//			case W:
+////				System.out.println("\tUP");
+////				isPressed[Player.UP].set(false);
+//				break;
+//			case DOWN:
+//			case KP_DOWN:
+//			case S:
+////				System.out.println("\tDOWN");
+////				isPressed[Player.DOWN].set(false);
+//				break;
+//			case LEFT:
+//			case KP_LEFT:
+//			case A:
+////				System.out.println("\tLEFT");
+////				isPressed[Player.LEFT].set(false);
+//				break;
+//			case RIGHT:
+//			case KP_RIGHT:
+//			case D:
+////				System.out.println("\tRIGHT");
+////				isPressed[Player.RIGHT].set(false);
+//				break;
+//			default:
+//				break;
+//		}
+//		renderTiles();
+//		if(p1.obsStatus[Player.CENTER]==-1){
+//			p1.catchCanvas(drawingCanvas);
+//			p1.drawMe();
+//		}
 	}
 
 	@FXML
