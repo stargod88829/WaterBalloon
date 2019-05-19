@@ -8,7 +8,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 
-public class Bomb{
+public class Bomb extends GameController{
 	private int x;
 	private int y;
 	private Player player;
@@ -38,8 +38,6 @@ public class Bomb{
 			@Override
 			public void run(){
 				System.out.println("BOOM! @("+x+","+y+")");
-				player.checkAround();
-
 				//System.out.println(GameController.readFile("ObstacleData.txt"));
 				if(tileVec.get((y-1)*17+x).getObs() == 1 ||
 						tileVec.get((y-1)*17+x).getObs() == 2 ||
