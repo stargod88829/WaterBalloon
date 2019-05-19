@@ -3,7 +3,9 @@ package game;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.HashSet;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.stream.Stream;
 import java.util.Vector;
 
@@ -14,6 +16,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.event.ActionEvent;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.control.Button;
@@ -32,61 +35,25 @@ public class GameController {
 	// @FXML private Button leftBtn;
 	// @FXML private Button rightBtn;
 
-	public final BooleanProperty[] isPressed = new BooleanProperty[5];
-	public final BooleanBinding[][] bothPressed = new BooleanBinding[5][5];
-
 	private boolean inObsTest= false;
 	private boolean inKBTest= true;
+	public static final Set<KeyCode> pressed = new HashSet<KeyCode>();
 
 
 	public static int meX=1;
 	public static int meY=1;
 	private Image p1Img= new Image("image/ME.png");
-	private Player p1=new Player(1,1, p1Img);
+	private Player p1=new Player(1,1, p1Img, drawingCanvas);
 
 	private static Image tileSet= new Image("image/Dungeon_Tileset.png");
 	private static PixelReader backReader = tileSet.getPixelReader();
 	public static int canvasXOffset= 160;
 	public static int canvasYOffset= 20;
 
-	private String mapDataStr;
-	private String obstacleDataStr;
-	private String bombsDataStr;
 	public static Vector<Tile> tileVec= new Vector<>();
 
 	public void initialize() {
-
-		for(int i= Player.CENTER; i<= Player.RIGHT; i++) {
-			isPressed[i] = new SimpleBooleanProperty(false);
-		}
-		for(int i= Player.CENTER; i<= Player.RIGHT; i++){
-			for (int j= Player.CENTER; j<= Player.RIGHT; j++){
-				bothPressed[i][j]
-						= isPressed[i].and(isPressed[j]);
-			}
-		}
-		bothPressed[Player.UP][Player.LEFT].addListener(
-			(obs, werePressed, arePressed) -> {
-				System.out.println("UP + LEFT");
-				System.out.println(arePressed ?"true":"false");
-			}
-		);
-		bothPressed[Player.UP][Player.RIGHT].addListener(
-			(obs, werePressed, arePressed) -> {
-				System.out.println("UP + RIGHT");
-			}
-		);
-		bothPressed[Player.DOWN][Player.LEFT].addListener(
-			(obs, werePressed, arePressed) -> {
-				System.out.println("DOWN + LEFT");
-			}
-		);
-		bothPressed[Player.DOWN][Player.RIGHT].addListener(
-			(obs, werePressed, arePressed) -> {
-				System.out.println("DOWN + RIGHT");
-			}
-		);
-
+		//gameLoop.run();
 
 		drawingCanvas.getParent().addEventFilter(KeyEvent.KEY_PRESSED,
 				event -> {
@@ -109,12 +76,12 @@ public class GameController {
 		p1.drawMe(drawingCanvas);
 	}
 
-	ChangeListener<Boolean> boolHandler= new ChangeListener<Boolean>() {
-		@Override
-		public void changed(ObservableValue<? extends Boolean> observableValue, Boolean aBoolean, Boolean t1) {
-
-		}
-	};
+//	ChangeListener<Boolean> boolHandler= new ChangeListener<Boolean>() {
+//		@Override
+//		public void changed(ObservableValue<? extends Boolean> observableValue, Boolean aBoolean, Boolean t1) {
+//
+//		}
+//	};
 
 
 	@FXML
@@ -232,6 +199,14 @@ public class GameController {
 			return;
 //		System.out.println(""+e.getCode().toString());
 
+		pressed.add(e.getCode());
+//		p1.catchKeyPress(pressed);
+//		if(pressed.contains(KeyCode.UP)){
+//			System.out.println("UP");
+//			if(pressed.contains(KeyCode.LEFT)){
+//				System.out.println("UP + LEFT");
+//			}
+//		}
 //
 		p1.checkAround();
 		switch (e.getCode()) {
@@ -239,7 +214,6 @@ public class GameController {
 			case KP_UP:
 			case W:
 //				System.out.println("\tUP");
-				isPressed[Player.UP].set(true);
 				if( (p1.obsStatus[Player.UP]==-1 || p1.obsStatus[Player.UP]==4) && p1.bombStatus[Player.UP]==0)
 				{
 					p1.move(Player.UP);
@@ -253,7 +227,6 @@ public class GameController {
 			case KP_DOWN:
 			case S:
 //				System.out.println("\tDOWN");
-				isPressed[Player.DOWN].set(true);
 				if( (p1.obsStatus[Player.DOWN]==-1 || p1.obsStatus[Player.DOWN]==4) && p1.bombStatus[Player.DOWN]==0)
 				{
 					p1.move(Player.DOWN);
@@ -267,7 +240,6 @@ public class GameController {
 			case KP_LEFT:
 			case A:
 //				System.out.println("\tLEFT");
-				isPressed[Player.LEFT].set(true);
 				if( (p1.obsStatus[Player.LEFT]==-1 || p1.obsStatus[Player.LEFT]==4) && p1.bombStatus[Player.LEFT]==0)
 				{
 					p1.move(Player.LEFT);
@@ -281,7 +253,6 @@ public class GameController {
 			case KP_RIGHT:
 			case D:
 //				System.out.println("\tRIGHT");
-				isPressed[Player.RIGHT].set(true);
 				if( (p1.obsStatus[Player.RIGHT]==-1 || p1.obsStatus[Player.RIGHT]==4) && p1.bombStatus[Player.RIGHT]==0)
 				{
 					p1.move(Player.RIGHT);
@@ -314,31 +285,31 @@ public class GameController {
 		if(!inKBTest)
 			return;
 
+		pressed.remove(e.getCode());
+
+
+
 		p1.checkAround();
 		switch (e.getCode()) {
 			case UP:
 			case KP_UP:
 			case W:
 //				System.out.println("\tUP");
-				isPressed[Player.UP].set(false);
 				break;
 			case DOWN:
 			case KP_DOWN:
 			case S:
 //				System.out.println("\tDOWN");
-				isPressed[Player.DOWN].set(false);
 				break;
 			case LEFT:
 			case KP_LEFT:
 			case A:
 //				System.out.println("\tLEFT");
-				isPressed[Player.LEFT].set(false);
 				break;
 			case RIGHT:
 			case KP_RIGHT:
 			case D:
 //				System.out.println("\tRIGHT");
-				isPressed[Player.RIGHT].set(false);
 				break;
 			default:
 				break;
@@ -368,12 +339,12 @@ public class GameController {
 
 
 	public void loadDataFile(String mapDataAddress, String obstacleDataAddress, String bombsDataAddress){
-		mapDataStr= readFile(mapDataAddress);
-		obstacleDataStr= readFile(obstacleDataAddress);
-		bombsDataStr= readFile(bombsDataAddress);
+		String mapDataStr = readFile(mapDataAddress);
+		String obstacleDataStr = readFile(obstacleDataAddress);
+		String bombsDataStr = readFile(bombsDataAddress);
 
-		mapDataStr= mapDataStr.replaceAll("[)][()]|[,]", " ");
-		mapDataStr= mapDataStr.replaceAll("[()]", " ");
+		mapDataStr = mapDataStr.replaceAll("[)][()]|[,]", " ");
+		mapDataStr = mapDataStr.replaceAll("[()]", " ");
 
 		// System.out.println(bombsDataStr);
 
