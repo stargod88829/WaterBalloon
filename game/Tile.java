@@ -29,5 +29,7 @@ public class Tile {
 
 	public int getBombStatus(){return bombStat;}
 	//0: No Bomb, 1: Bomb Set, 9: Wall
+	//Explosion:
+	// -1: Up, -2: Down, -3:Left, -4: Right, -5: Center
 	public void setBombStatus(int num){bombStat= num;}
 }

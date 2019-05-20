@@ -27,18 +27,20 @@ public class Player{
 	public Image meImg;
 
 	private Canvas drawingCanvas;
-	private int absX;
-	private int absY;
+	private double incX;
+	private double incY;
 	public int[] obsStatus= new int[5];
 	public int[] bombStatus= new int[5];
+	public Vector<Bomb> bombVector= new Vector<>();;
 
 	Player(int x, int y, Image meImg){
 		this.x= x;
 		this.y= y;
 		this.meImg= meImg;
+		incX= 0;
+		incY= 0;
 //		this.drawingCanvas= drawingCanvas;
 //		moveTimer = new Timer(true);
-
 	}
 
 //	public int getX() { return x; }
@@ -124,15 +126,19 @@ public class Player{
 
 		if(GameController.pressed.contains(KeyCode.SPACE)){//SPACE
 			checkAround();
-			System.out.println("\tIN SPACE");
+			if(bombVector.size() < 5){
+				System.out.println("\tIN SPACE "+bombVector.size());
 
-			GameController.tileVec.get(17*y+x).setBombStatus(1);
-			renderTiles();
-			if(obsStatus[Player.CENTER]==-1)
-				drawMe(drawingCanvas);
+				GameController.tileVec.get(17*y+x).setBombStatus(1);
+				renderTiles();
+				if(obsStatus[Player.CENTER]==-1)
+					drawMe(drawingCanvas);
 
-			Bomb bomb= new Bomb(this,drawingCanvas);
-			bomb.putBomb(x, y);
+//				Bomb bomb= new Bomb(this,drawingCanvas);
+				bombVector.add(new Bomb(this,drawingCanvas));
+				bombVector.lastElement().putBomb(x, y);
+			}
+//
 //				tileVec= bomb.getTileVec();
 			//model.getBombs().add(bomb1);
 			//renderTiles(tileVec);
@@ -144,15 +150,39 @@ public class Player{
 	public void move(int nav){
 		switch (nav){
 			case UP:
+//				incY--;
+//				if(incY==-20){
+//					y--;
+//				}
+//				if(incY<=-40)
+//					incY=0;
 				y--;
 				break;
 			case DOWN:
+//				incY++;
+//				if(incY==20){
+//					y++;
+//				}
+//				if(incY>=40)
+//					incY=0;
 				y++;
 				break;
 			case LEFT:
+//				incX--;
+//				if(incX==-20){
+//					x--;
+//				}
+//				if(incX<=-40)
+//					incX=0;
 				x--;
 				break;
 			case RIGHT:
+//				incX++;
+//				if(incX==20){
+//					x++;
+//				}
+//				if(incX>=40)
+//					incX=0;
 				x++;
 				break;
 			default:
@@ -175,14 +205,22 @@ public class Player{
 	}
 
 	public void drawMe(){
+		checkAround();
+		if(bombStatus[CENTER]<= -1 && bombStatus[CENTER]>= -5){
+			x=1; y=1;
+		}
 		GraphicsContext gb = drawingCanvas.getGraphicsContext2D();
-		gb.drawImage(meImg, GameController.canvasXOffset+40*x, GameController.canvasYOffset+40*y, 40, 40);
+		gb.drawImage(meImg, GameController.canvasXOffset+40*x+incX, GameController.canvasYOffset+40*y+incY, 40, 40);
 	}
 	public void catchCanvas(Canvas drawingCanvas){
 		this.drawingCanvas= drawingCanvas;
 	}
 
 	public void drawMe(Canvas drawingCanvas){
+		checkAround();
+		if(bombStatus[CENTER]<= -1 && bombStatus[CENTER]>= -5){
+			x=1; y=1;
+		}
 		GraphicsContext gb = drawingCanvas.getGraphicsContext2D();
 		gb.drawImage(meImg, GameController.canvasXOffset+40*x, GameController.canvasYOffset+40*y, 40, 40);
 	}
@@ -207,10 +245,31 @@ public class Player{
 
 		for(int i= 0; i < 15; i++){
 			for(int j= 0; j < 17; j++){
-				if(GameController.tileVec.get(i*17+j).getBombStatus() == 1)
-					if(GameController.tileVec.get(i*17+j).getObs() != 4)//Bush
+				if(GameController.tileVec.get(i*17+j).getObs() != 4){//Bush
+					if(GameController.tileVec.get(i*17+j).getBombStatus() == 1)
 						gc.drawImage(Bomb.pic, GameController.canvasXOffset+40*j,
 								GameController.canvasYOffset+40*i, 40, 40);
+
+					if (GameController.tileVec.get(i*17+j).getBombStatus() == -1)
+						gc.drawImage(Bomb.up, GameController.canvasXOffset+40*j,
+								GameController.canvasYOffset+40*i, 40, 40);
+
+					if (GameController.tileVec.get(i*17+j).getBombStatus() == -2)
+						gc.drawImage(Bomb.down, GameController.canvasXOffset+40*j,
+								GameController.canvasYOffset+40*i, 40, 40);
+
+					if (GameController.tileVec.get(i*17+j).getBombStatus() == -3)
+						gc.drawImage(Bomb.left, GameController.canvasXOffset+40*j,
+								GameController.canvasYOffset+40*i, 40, 40);
+
+					if (GameController.tileVec.get(i*17+j).getBombStatus() == -4)
+						gc.drawImage(Bomb.right, GameController.canvasXOffset+40*j,
+								GameController.canvasYOffset+40*i, 40, 40);
+
+					if (GameController.tileVec.get(i*17+j).getBombStatus() == -5)
+						gc.drawImage(Bomb.center, GameController.canvasXOffset+40*j,
+								GameController.canvasYOffset+40*i, 40, 40);
+				}
 			}
 		}//Draw Bomb
 	}
