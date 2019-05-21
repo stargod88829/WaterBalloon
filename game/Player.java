@@ -283,7 +283,7 @@ public class Player{
 			if(bombStatus[CENTER]<= -1 && bombStatus[CENTER]>= -5){
 				x=1; y=1;
 				abs_x= GameController.canvasXOffset+x*40;
-				abs_y= GameController.canvasXOffset+y*40;
+				abs_y= GameController.canvasYOffset+y*40;
 			}
 			gb.drawImage(meImg, abs_x, abs_y, 40, 40);
 		}
@@ -311,7 +311,7 @@ public class Player{
 			if(bombStatus[CENTER]<= -1 && bombStatus[CENTER]>= -5){
 				x=1; y=1;
 				abs_x= GameController.canvasXOffset+x*40;
-				abs_y= GameController.canvasXOffset+y*40;
+				abs_y= GameController.canvasYOffset+y*40;
 			}
 			gb.drawImage(meImg, abs_x, abs_y, 40, 40);
 		}
