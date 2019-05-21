@@ -34,7 +34,8 @@ public class Player{
 	public int[] obsStatus= new int[5];
 	public int[] bombStatus= new int[5];
 	public Vector<Bomb> bombVector= new Vector<Bomb>(5);
-	public int bombCount=0;
+	private int bombCount= 0;
+	private int maxBombCount= 5;
 
 	Player(int x, int y, Image meImg){
 		this.x= x;
@@ -46,6 +47,7 @@ public class Player{
 		dy = 0;
 //		this.drawingCanvas= drawingCanvas;
 //		moveTimer = new Timer(true);
+		maxBombCount = 5;
 	}
 
 //	public int getX() { return x; }
@@ -131,10 +133,12 @@ public class Player{
 
 		if(GameController.pressed.contains(KeyCode.SPACE)){//SPACE
 			checkAround();
-			if(bombVector.size() < 5){
+			if(bombCount < 5){
 
 				if (GameController.tileVec.get(y*17+x).getBombStatus() ==0 ) {
-					System.out.println("\tIN SPACE "+bombVector.size());
+
+					bombCount++;
+					System.out.println("\tIN SPACE "+bombCount);
 
 					GameController.tileVec.get(17*y+x).setBombStatus(1);
 					renderTiles();
@@ -142,8 +146,10 @@ public class Player{
 						drawMe(drawingCanvas);
 
 		//				Bomb bomb= new Bomb(this,drawingCanvas);
-                    bombVector.add(new Bomb(this,drawingCanvas));
-                    bombVector.lastElement().putBomb(x, y);
+
+//                    bombVector.add(new Bomb(this,drawingCanvas));
+                    bombVector.elementAt(bombCount).putBomb(x, y);
+
                 }
 			}
 //
@@ -166,9 +172,13 @@ public class Player{
 //					incY=0;
 				if(GameController.inObsTest){
 					dy=-1;
-					abs_y-=4;
-					x=(int)((abs_x+20-GameController.canvasXOffset)/GameController.X_BLOCKS);
-					y=(int)((abs_y+20-GameController.canvasYOffset)/GameController.Y_BLOCKS);
+					if((abs_x-GameController.canvasXOffset)%40==0)
+						abs_y-=10;
+					if((abs_x-GameController.canvasXOffset)%40==0 && (abs_y-GameController.canvasYOffset)%40==0){
+						x=(int)((abs_x+20-GameController.canvasXOffset)/40);
+						y=(int)((abs_y+20-GameController.canvasYOffset)/40);
+					}
+
 					System.out.println("abs_x= "+abs_x+", x= "+x);
 					System.out.println("abs_y= "+abs_y+", y= "+y);
 				}
@@ -186,9 +196,12 @@ public class Player{
 //					incY=0;
 				if(GameController.inObsTest){
 					dy=1;
-					abs_y+=4;
-					x=(int)((abs_x+20-GameController.canvasXOffset)/GameController.X_BLOCKS);
-					y=(int)((abs_y+20-GameController.canvasYOffset)/GameController.Y_BLOCKS);
+					if((abs_x-GameController.canvasXOffset)%40==0)
+						abs_y+=10;
+					if((abs_x-GameController.canvasXOffset)%40==0 && (abs_y-GameController.canvasYOffset)%40==0){
+						x=(int)((abs_x+20-GameController.canvasXOffset)/40);
+						y=(int)((abs_y+20-GameController.canvasYOffset)/40);
+					}
 					System.out.println("abs_x= "+abs_x+", x= "+x);
 					System.out.println("abs_y= "+abs_y+", y= "+y);
 				}
@@ -206,9 +219,12 @@ public class Player{
 //					incX=0;
 				if(GameController.inObsTest){
 					dx=-1;
-					abs_x-=4;
-					x=(int)((abs_x+20-GameController.canvasXOffset)/GameController.X_BLOCKS);
-					y=(int)((abs_y+20-GameController.canvasYOffset)/GameController.Y_BLOCKS);
+					if((abs_y-GameController.canvasYOffset)%40==0)
+						abs_x-=10;
+					if((abs_x-GameController.canvasXOffset)%40==0 && (abs_y-GameController.canvasYOffset)%40==0){
+						x=(int)((abs_x+20-GameController.canvasXOffset)/40);
+						y=(int)((abs_y+20-GameController.canvasYOffset)/40);
+					}
 					System.out.println("abs_x= "+abs_x+", x= "+x);
 					System.out.println("abs_y= "+abs_y+", y= "+y);
 				}
@@ -227,9 +243,12 @@ public class Player{
 //					incX=0;
 				if(GameController.inObsTest){
 					dx=1;
-					abs_x+=4;
-					x=(int)((abs_x+20-GameController.canvasXOffset)/GameController.X_BLOCKS);
-					y=(int)((abs_y+20-GameController.canvasYOffset)/GameController.Y_BLOCKS);
+					if((abs_y-GameController.canvasYOffset)%40==0)
+						abs_x+=10;
+					if((abs_x-GameController.canvasXOffset)%40==0 && (abs_y-GameController.canvasYOffset)%40==0){
+						x=(int)((abs_x+20-GameController.canvasXOffset)/40);
+						y=(int)((abs_y+20-GameController.canvasYOffset)/40);
+					}
 					System.out.println("abs_x= "+abs_x+", x= "+x);
 					System.out.println("abs_y= "+abs_y+", y= "+y);
 				}
@@ -279,6 +298,10 @@ public class Player{
 	}
 	public void catchCanvas(Canvas drawingCanvas){
 		this.drawingCanvas= drawingCanvas;
+		bombVector.clear();
+		for(int i=0; i< maxBombCount; i++){
+			bombVector.add(new Bomb(this, drawingCanvas));
+		}
 	}
 
 	public void drawMe(Canvas drawingCanvas){
@@ -348,6 +371,13 @@ public class Player{
 				}
 			}
 		}//Draw Bomb
+	}
+
+	public int getBombCount() {
+		return bombCount;
+	}
+	public void setBombCount(int bombCount){
+		this.bombCount= bombCount;
 	}
 
 	public void dXYReset(){

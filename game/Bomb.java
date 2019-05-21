@@ -306,7 +306,8 @@ public class Bomb{
 		//drawMe();
 		//GameController.reachRenderTiles();
 
-		player.bombVector.remove(this);
+//		player.bombVector.remove(this);
+		player.setBombCount(player.getBombCount()-1);
 	}
 
 //	public Vector<Tile> getTileVec(){

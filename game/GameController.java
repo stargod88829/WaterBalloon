@@ -394,11 +394,12 @@ public class GameController {
 		System.out.println("ObsId= "+propID+", BombStat= "+bombID);
 		System.out.println("("+e.getX()+","+e.getY()+")");
 
-		// if(propID == 1 || propID == 2 || propID == 3){
-		// 	tileVec.get(idY*17+idX).setObs(-1);
-		// 	renderTiles(tileVec);
-		// 	drawMe();
-		// }
+		if(pressed.contains(KeyCode.CONTROL))
+			if(propID == 1 || propID == 2 || propID == 3){
+				tileVec.get(idY*17+idX).setObs(-1);
+				renderTiles();
+				p1.drawMe();
+			}
 	}
 
 
