@@ -38,8 +38,11 @@ public class GameController {
 //	public final BooleanProperty[] isPressed = new BooleanProperty[5];
 //	public final BooleanBinding[][] bothPressed = new BooleanBinding[5][5];
 
-	private boolean inObsTest= false;
-	private boolean inKBTest= true;
+	public static final int X_BLOCKS=17;
+	public static final int Y_BLOCKS=15;
+
+	public static boolean inObsTest= false;
+	public static boolean inKBTest= true;
 	public static final Set<KeyCode> pressed = new HashSet<KeyCode>();
 
 
@@ -123,7 +126,7 @@ public class GameController {
 
 	@FXML
 	private void obsTestBtnPressed(ActionEvent e) {
-		System.out.println("Player1 @("+p1.x+","+p1.y+")");
+		System.out.println("Player1 @("+p1.x+","+p1.y+"), abs= ("+p1.abs_x+","+p1.abs_y+")");
 		if(!inObsTest){
 			obsTestBtn.setStyle("-fx-border-color: RED; ");
 			obsTestBtn.setText("Stop");
@@ -389,6 +392,7 @@ public class GameController {
 		propID= tileVec.get(idY*17+idX).getObs();
 		bombID= tileVec.get(idY*17+idX).getBombStatus();
 		System.out.println("ObsId= "+propID+", BombStat= "+bombID);
+		System.out.println("("+e.getX()+","+e.getY()+")");
 
 		// if(propID == 1 || propID == 2 || propID == 3){
 		// 	tileVec.get(idY*17+idX).setObs(-1);
@@ -522,6 +526,10 @@ public class GameController {
 
         return contentBuilder.toString();
     }
+
+//    public boolean isInObsTest(){
+//		return inObsTest;
+//    }
 
 //	public void drawMe(){
 //		GraphicsContext gb = drawingCanvas.getGraphicsContext2D();
