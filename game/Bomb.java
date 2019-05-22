@@ -72,10 +72,10 @@ public class Bomb{
 //							GameController.canvasYOffset + 40 * (y - 1), 40, 40);
 					tileVec.get((y-1)*17+x).setBombStatus(0);
 					System.out.println("\t!!IN Tasku (UP)!!");
-					renderTiles();
-					if(tileVec.get(player.y*17+player.x).getObs() != 4){
-						player.drawMe(drawingCanvas);
-					}
+//					renderTiles();
+//					if(tileVec.get(player.y*17+player.x).getObs() != 4){
+//						player.drawMe(drawingCanvas);
+//					}
 				}
 			};
 			timeru.schedule(tasku, timeLeft2);
@@ -94,7 +94,7 @@ public class Bomb{
 					public void run() {
 						tileVec.get((y - 2) * 17 + x).setBombStatus(0);
 						System.out.println("\t!!IN Taskuu (UP)!!");
-						renderTiles();
+//						renderTiles();
 					}
 				};
 				timeruu.schedule(taskuu, timeLeft2);
@@ -105,10 +105,10 @@ public class Bomb{
 			}
 	//		tileVec.get((y-1)*17+x).setObs(-1);
 	//		tileVec.get((y-1)*17+x).setBombStatus(-1);//Up Water
-			renderTiles();
-			if(tileVec.get(player.y*17+player.x).getObs() != 4){
-				player.drawMe(drawingCanvas);
-			}
+//			renderTiles();
+//			if(tileVec.get(player.y*17+player.x).getObs() != 4){
+//				player.drawMe(drawingCanvas);
+//			}
 		}//up
 
 		k =0;
@@ -124,10 +124,10 @@ public class Bomb{
 //							GameController.canvasYOffset + 40 * (y + 1), 40, 40);
 					tileVec.get((y+1)*17+x).setBombStatus(0);
 					System.out.println("\t!!IN Tasku (DOWN)!!");
-					renderTiles();
-					if(tileVec.get(player.y*17+player.x).getObs() != 4){
-						player.drawMe(drawingCanvas);
-					}
+//					renderTiles();
+//					if(tileVec.get(player.y*17+player.x).getObs() != 4){
+//						player.drawMe(drawingCanvas);
+//					}
 				}
 			};
 			timeru.schedule(tasku, timeLeft2);
@@ -146,7 +146,7 @@ public class Bomb{
 					public void run() {
 						tileVec.get((y+2)*17+x).setBombStatus(0);
 						System.out.println("\t!!IN Taskuu (DOWN)!!");
-						renderTiles();
+//						renderTiles();
 					}
 				};
 				timeruu.schedule(taskuu, timeLeft2);
@@ -157,10 +157,10 @@ public class Bomb{
 			}
 	//		tileVec.get((y+1)*17+x).setObs(-1);
 	//		tileVec.get((y+1)*17+x).setBombStatus(-2);//Down Water
-			renderTiles();
-			if(tileVec.get(player.y*17+player.x).getObs() != 4){
-				player.drawMe(drawingCanvas);
-			}
+//			renderTiles();
+//			if(tileVec.get(player.y*17+player.x).getObs() != 4){
+//				player.drawMe(drawingCanvas);
+//			}
 		}//down
 
 		k =0;
@@ -176,10 +176,10 @@ public class Bomb{
 //							GameController.canvasYOffset+40*y, 40, 40);
 					tileVec.get(y*17+(x-1)).setBombStatus(0);
 					System.out.println("\t!!IN Tasku (LEFT)!!");
-					renderTiles();
-					if(tileVec.get(player.y*17+player.x).getObs() != 4){
-						player.drawMe(drawingCanvas);
-					}
+//					renderTiles();
+//					if(tileVec.get(player.y*17+player.x).getObs() != 4){
+//						player.drawMe(drawingCanvas);
+//					}
 				}
 			};
 			timeru.schedule(tasku, timeLeft2);
@@ -199,7 +199,7 @@ public class Bomb{
 					public void run() {
 						tileVec.get(y*17+(x-2)).setBombStatus(0);
 						System.out.println("\t!!IN Taskuu (LEFT)!!");
-						renderTiles();
+//						renderTiles();
 					}
 				};
 				timeruu.schedule(taskuu, timeLeft2);
@@ -210,10 +210,10 @@ public class Bomb{
 			}
 	//		tileVec.get(y*17+(x-1)).setObs(-1);
 	//		tileVec.get(y*17+(x-1)).setBombStatus(-3);//Left Water
-			renderTiles();
-			if(tileVec.get(player.y*17+player.x).getObs() != 4){
-				player.drawMe(drawingCanvas);
-			}
+//			renderTiles();
+//			if(tileVec.get(player.y*17+player.x).getObs() != 4){
+//				player.drawMe(drawingCanvas);
+//			}
 		}//left
 
 		k =0;
@@ -229,10 +229,10 @@ public class Bomb{
 //							GameController.canvasYOffset+40*y, 40, 40);
 					tileVec.get(y*17+(x+1)).setBombStatus(0);
 					System.out.println("\t!!IN Tasku (RIGHT)!!");
-					renderTiles();
-					if(tileVec.get(player.y*17+player.x).getObs() != 4){
-						player.drawMe(drawingCanvas);
-					}
+//					renderTiles();
+//					if(tileVec.get(player.y*17+player.x).getObs() != 4){
+//						player.drawMe(drawingCanvas);
+//					}
 				}
 			};
 			timeru.schedule(tasku, timeLeft2);
@@ -251,7 +251,7 @@ public class Bomb{
 					public void run() {
 						tileVec.get(y*17+(x+2)).setBombStatus(0);
 						System.out.println("\t!!IN Taskuu (RIGHT)!!");
-						renderTiles();
+//						renderTiles();
 					}
 				};
 				timeruu.schedule(taskuu, timeLeft2);
@@ -262,10 +262,10 @@ public class Bomb{
 			}
 //			tileVec.get(y*17+(x+1)).setObs(-1);
 	//		tileVec.get(y*17+(x+1)).setBombStatus(-4);//Right Water
-			renderTiles();
-			if(tileVec.get(player.y*17+player.x).getObs() != 4){
-				player.drawMe(drawingCanvas);
-			}
+//			renderTiles();
+//			if(tileVec.get(player.y*17+player.x).getObs() != 4){
+//				player.drawMe(drawingCanvas);
+//			}
 		}//right
 
 		k =0;
@@ -280,10 +280,10 @@ public class Bomb{
 //							GameController.canvasYOffset+40*y, 40, 40);
 					tileVec.get(y*17+x).setBombStatus(0);
 					System.out.println("\t!!IN Tasku (CEN)!!");
-					renderTiles();
-					if(tileVec.get(player.y*17+player.x).getObs() != 4){
-						player.drawMe(drawingCanvas);
-					}
+//					renderTiles();
+//					if(tileVec.get(player.y*17+player.x).getObs() != 4){
+//						player.drawMe(drawingCanvas);
+//					}
 				}
 			};
 //					taimaa.setRepeats(false);
@@ -292,10 +292,10 @@ public class Bomb{
 
 			tileVec.get(y*17+x).setObs(-1);
 			tileVec.get(y*17+x).setBombStatus(-5);//Center Water
-			renderTiles();
-			if(tileVec.get(player.y*17+player.x).getObs() != 4){
-				player.drawMe(drawingCanvas);
-			}
+//			renderTiles();
+//			if(tileVec.get(player.y*17+player.x).getObs() != 4){
+//				player.drawMe(drawingCanvas);
+//			}
 		}//center
 
 		//drawMe();

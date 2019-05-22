@@ -3,11 +3,8 @@ package game;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.HashSet;
-import java.util.Scanner;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Stream;
-import java.util.Vector;
 
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.BooleanProperty;
@@ -30,6 +27,8 @@ public class GameController {
 	@FXML private Canvas drawingCanvas;
 	@FXML private Button obsTestBtn;
 	@FXML private Button kbTestBtn;
+	private Timer aniTimer=new Timer(true);
+	private CanvasRedrawTask<Player> task;
 	// @FXML private Button upBtn;
 	// @FXML private Button downBtn;
 	// @FXML private Button leftBtn;
@@ -94,6 +93,7 @@ public class GameController {
 //			}
 //		);
 
+
 		p1.catchCanvas(drawingCanvas);
 		drawingCanvas.getParent().addEventFilter(KeyEvent.KEY_PRESSED,
 				event -> {
@@ -114,6 +114,20 @@ public class GameController {
 		renderTiles();
 
 		p1.drawMe(drawingCanvas);
+		task = new CanvasRedrawTask<>(drawingCanvas) {
+			@Override
+			public void redraw(GraphicsContext gc, Player player) {
+				renderTiles();
+				player.drawMe();
+			}
+		};
+
+		aniTimer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				task.requestRedraw(p1);
+			}
+		},0 , 100);
 	}
 
 //	ChangeListener<Boolean> boolHandler= new ChangeListener<Boolean>() {
@@ -128,6 +142,8 @@ public class GameController {
 	private void obsTestBtnPressed(ActionEvent e) {
 		System.out.println("Player1 @("+p1.x+","+p1.y+"), abs= ("+p1.abs_x+","+p1.abs_y+")");
 		if(!inObsTest){
+			p1.abs_x= canvasXOffset+p1.x*40;
+			p1.abs_y= canvasYOffset+p1.y*40;
 			obsTestBtn.setStyle("-fx-border-color: RED; ");
 			obsTestBtn.setText("Stop");
 			inObsTest= true;
@@ -247,13 +263,16 @@ public class GameController {
 			pressed.add(e.getCode());
 			System.out.println("NEW KEY");
 			p1.runMoveTimer();
+//			task.requestRedraw(p1);
 		}
 		else{
 			if(!pressed.contains(e.getCode())){
 				pressed.add(e.getCode());
 				System.out.println("ADD KEY");
+//				task.requestRedraw(p1);
 			}
 		}
+//		task.requestRedraw(p1);
 
 //		switch (e.getCode()) {
 //			case UP:

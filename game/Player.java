@@ -29,11 +29,16 @@ public class Player{
 	public Image meImg;
 	private static Image foxChar_L= new Image("image/fox-run-alt.png");
 	private static Image foxChar_R= new Image("image/fox-run.png");
-	private static PixelReader charFrameReader;
+//	private static Image leaves_L= new Image("image/Leaves_180x180_14.png");
+//	private static Image leaves_R= new Image("image/Leaves_180x180_14_alter.png");
+	private static Image bushAlt= new Image("image/bush_tile_alter.png");
+	private static PixelReader frameReader;
 //	private static PixelReader charFrameReader_R = foxChar_R.getPixelReader();
 	private Vector<Image> charFrames;
 	private Vector<Image> charFrames_L= new Vector<>();
 	private Vector<Image> charFrames_R= new Vector<>();
+//	private Vector<Image> leafFrames_L= new Vector<>();
+//	private Vector<Image> leafFrames_R= new Vector<>();
 	private int frameCount;
 	private int maxFrame;
 	private int frameInterval;
@@ -65,12 +70,20 @@ public class Player{
 		frameCount= 0;
 		frameInterval= 1;
 		for (int i=1; i<=6; i++){
-			charFrameReader = foxChar_L.getPixelReader();
+			frameReader = foxChar_L.getPixelReader();
 			charFrames_L.add(getFrame(i,1,24));
-			charFrameReader = foxChar_R.getPixelReader();
+			frameReader = foxChar_R.getPixelReader();
 			charFrames_R.add(getFrame(i,1,24));
 		}
+//		for (int i=1; i<=14; i++){
+//			frameReader= leaves_L.getPixelReader();
+//			leafFrames_L.add(getFrame(i,1,180));
+//			frameReader= leaves_R.getPixelReader();
+//			leafFrames_R.add(getFrame(i,1,180));
+//		}
 		charFrames= charFrames_R;
+
+
 
 	}
 
@@ -106,9 +119,9 @@ public class Player{
 				move(Player.UP);
 				System.out.println("MOVED UP");
 				//print the character
-				renderTiles();
-				if(obsStatus[Player.CENTER]==-1)
-					drawMe();
+//				renderTiles();
+//				if(obsStatus[Player.CENTER]==-1)
+//					drawMe();
 			}
 //			navFlag[UP]=true;
 		}
@@ -120,39 +133,46 @@ public class Player{
 				move(Player.DOWN);
 				System.out.println("MOVED DOWN");
 				//print the character
-				renderTiles();
-				if(obsStatus[Player.DOWN]==-1)
-					drawMe();
+//				renderTiles();
+//				if(obsStatus[Player.DOWN]==-1)
+//					drawMe();
 			}
 //			navFlag[DOWN]=true;
 		}
 
 		if(GameController.pressed.contains(KeyCode.LEFT)){//LEFT
 			checkAround();
+
+			charFrames= charFrames_L;
+
+
 			charFrames= charFrames_L;
 			if( (obsStatus[Player.LEFT]==-1 || obsStatus[Player.LEFT]==4) && bombStatus[Player.LEFT]==0)
 			{
 				move(Player.LEFT);
 				System.out.println("MOVED LEFT");
 				//print the character
-				renderTiles();
-				if(obsStatus[Player.LEFT]==-1)
-					drawMe();
+//				renderTiles();
+//				if(obsStatus[Player.LEFT]==-1)
+//					drawMe();
 			}
 //			navFlag[LEFT]=true;
 		}
 
 		if(GameController.pressed.contains(KeyCode.RIGHT)){//RIGHT
 			checkAround();
+
 			charFrames= charFrames_R;
+
+
 			if( (obsStatus[Player.RIGHT]==-1 || obsStatus[Player.RIGHT]==4) && bombStatus[Player.RIGHT]==0)
 			{
 				move(Player.RIGHT);
 				System.out.println("MOVED RIGHT");
 				//print the character
-				renderTiles();
-				if(obsStatus[Player.RIGHT]==-1)
-					drawMe();
+//				renderTiles();
+//				if(obsStatus[Player.RIGHT]==-1)
+//					drawMe();
 			}
 //			navFlag[RIGHT]=true;
 		}
@@ -167,9 +187,9 @@ public class Player{
 					System.out.println("\tIN SPACE "+bombCount);
 
 					GameController.tileVec.get(17*y+x).setBombStatus(1);
-					renderTiles();
-					if(obsStatus[Player.CENTER]==-1)
-						drawMe(drawingCanvas);
+//					renderTiles();
+//					if(obsStatus[Player.CENTER]==-1)
+//						drawMe(drawingCanvas);
 
 		//				Bomb bomb= new Bomb(this,drawingCanvas);
 
@@ -298,21 +318,34 @@ public class Player{
 	public void drawMe(){
 		GraphicsContext gb = drawingCanvas.getGraphicsContext2D();
 		checkAround();
-		if(GameController.inObsTest){
+		if(obsStatus[CENTER]==-1){
+			if(GameController.inObsTest){
+				if(bombStatus[CENTER]<= -1 && bombStatus[CENTER]>= -5){
+					x=1; y=1;
+					abs_x= GameController.canvasXOffset+x*40;
+					abs_y= GameController.canvasYOffset+y*40;
+				}
+				gb.drawImage(charFrames.elementAt(frameCount/frameInterval), abs_x, abs_y, 40, 40);
+			}
+			else{
+
+				if(bombStatus[CENTER]<= -1 && bombStatus[CENTER]>= -5){
+					x=1; y=1;
+				}
+				gb.drawImage(charFrames.elementAt(frameCount/frameInterval), GameController.canvasXOffset+40*x, GameController.canvasYOffset+40*y, 40, 40);
+			}
+		}
+		else if(obsStatus[CENTER]== 4){
+
 			if(bombStatus[CENTER]<= -1 && bombStatus[CENTER]>= -5){
 				x=1; y=1;
 				abs_x= GameController.canvasXOffset+x*40;
 				abs_y= GameController.canvasYOffset+y*40;
 			}
-			gb.drawImage(charFrames.elementAt(frameCount/frameInterval), abs_x, abs_y, 40, 40);
-		}
-		else{
+			gb.drawImage(bushAlt, GameController.canvasXOffset+40*x, GameController.canvasYOffset+40*y, 40, 40);
 
-			if(bombStatus[CENTER]<= -1 && bombStatus[CENTER]>= -5){
-				x=1; y=1;
-			}
-			gb.drawImage(charFrames.elementAt(frameCount/frameInterval), GameController.canvasXOffset+40*x, GameController.canvasYOffset+40*y, 40, 40);
 		}
+
 
 	}
 	public void catchCanvas(Canvas drawingCanvas){
@@ -405,6 +438,6 @@ public class Player{
 
 	public static WritableImage getFrame(int idX, int idY, int size){
 		//WritableImage rtnTile = new WritableImage(charFrameReader_L, 16, 16, 16, 16);
-		return new WritableImage(charFrameReader, size*(idX-1), size*(idY-1), size, size);
+		return new WritableImage(frameReader, size*(idX-1), size*(idY-1), size, size);
 	}
 }
