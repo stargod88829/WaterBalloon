@@ -13,7 +13,6 @@ import java.util.TimerTask;
 public class Bomb{
 	private int x;
 	private int y;
-	private int k;
 	private Player player;
 	private Canvas drawingCanvas;
 	private long timeLeft= 3500;
@@ -55,16 +54,16 @@ public class Bomb{
 	}
 
 	public void detonate(){
-		GraphicsContext gc = drawingCanvas.getGraphicsContext2D();
-		k=0;
+//		GraphicsContext gc = drawingCanvas.getGraphicsContext2D();
+		int k = 0;
+		int tempObsStat;
 		System.out.println("BOOM! @("+x+","+y+")");
 		//System.out.println(GameController.readFile("ObstacleData.txt"));
-		if(tileVec.get((y-1)*17+x).getObs() == 1 ||
-				tileVec.get((y-1)*17+x).getObs() == 2 ||
-				tileVec.get((y-1)*17+x).getObs() == 3 ||
-				tileVec.get((y-1)*17+x).getObs() == -1 ){
-			if(tileVec.get((y-1)*17+x).getObs() == -1)
-				k=1;
+
+		tempObsStat = tileVec.get((y-1)*17+x).getObs();//UP
+		if(tempObsStat == 1 || tempObsStat == 2 || tempObsStat == 3 || tempObsStat == -1 ){
+			if(tempObsStat == -1)
+				k = 1;
 			Timer timeru= new Timer(true);
 			TimerTask tasku= new TimerTask(){
 				@Override
@@ -84,11 +83,10 @@ public class Bomb{
 			tileVec.get((y-1)*17+x).setObs(-1);
 			tileVec.get((y-1)*17+x).setBombStatus(-1);//Up Water
 
-			if(player.power==2 && k==1 &&(
-					tileVec.get((y-2)*17+x).getObs() == 1 ||
-					tileVec.get((y-2)*17+x).getObs() == 2 ||
-					tileVec.get((y-2)*17+x).getObs() == 3 ||
-					tileVec.get((y-2)*17+x).getObs() == -1) ) {
+			tempObsStat = tileVec.get((y-2)*17+x).getObs();
+			if(player.power==2 && k ==1 &&(
+				tempObsStat == 1 || tempObsStat == 2 ||
+				tempObsStat == 3 || tempObsStat == -1) ) {
 
 				Timer timeruu = new Timer(true);
 				TimerTask taskuu = new TimerTask() {
@@ -112,13 +110,12 @@ public class Bomb{
 				player.drawMe(drawingCanvas);
 			}
 		}//up
-		k=0;
-		if(tileVec.get((y+1)*17+x).getObs() == 1 ||
-				tileVec.get((y+1)*17+x).getObs() == 2 ||
-				tileVec.get((y+1)*17+x).getObs() == 3 ||
-				tileVec.get((y+1)*17+x).getObs() == -1 ){
-			if(tileVec.get((y+1)*17+x).getObs() == -1)
-				k=1;
+
+		k =0;
+		tempObsStat= tileVec.get((y+1)*17+x).getObs();
+		if(tempObsStat == 1 || tempObsStat == 2 || tempObsStat == 3 || tempObsStat == -1 ){
+			if(tempObsStat == -1)
+				k =1;
 			Timer timeru= new Timer(true);
 			TimerTask tasku= new TimerTask() {
 				@Override
@@ -138,11 +135,10 @@ public class Bomb{
 			tileVec.get((y+1)*17+x).setObs(-1);
 			tileVec.get((y+1)*17+x).setBombStatus(-2);//Down Water
 
+			tempObsStat= tileVec.get((y+2)*17+x).getObs();
 			if(player.power==2 && k == 1 && (
-					tileVec.get((y+2)*17+x).getObs() == 1 ||
-					tileVec.get((y+2)*17+x).getObs() == 2 ||
-					tileVec.get((y+2)*17+x).getObs() == 3 ||
-					tileVec.get((y+2)*17+x).getObs() == -1) ){
+				tempObsStat == 1 || tempObsStat == 2 ||
+				tempObsStat == 3 || tempObsStat == -1) ){
 
 				Timer timeruu= new Timer(true);
 				TimerTask taskuu= new TimerTask(){
@@ -166,13 +162,12 @@ public class Bomb{
 				player.drawMe(drawingCanvas);
 			}
 		}//down
-		k=0;
-		if(tileVec.get(y*17+(x-1)).getObs() == 1 ||
-				tileVec.get(y*17+(x-1)).getObs() == 2 ||
-				tileVec.get(y*17+(x-1)).getObs() == 3 ||
-				tileVec.get(y*17+(x-1)).getObs() == -1 ){
-			if(tileVec.get(y*17+(x-1)).getObs() == -1)
-				k=1;
+
+		k =0;
+		tempObsStat= tileVec.get(y*17+(x-1)).getObs();
+		if(tempObsStat == 1 || tempObsStat == 2 || tempObsStat == 3 || tempObsStat == -1 ){
+			if(tempObsStat == -1)
+				k =1;
 			Timer timeru= new Timer(true);
 			TimerTask tasku= new TimerTask() {
 				@Override
@@ -192,11 +187,11 @@ public class Bomb{
 
 			tileVec.get(y*17+(x-1)).setObs(-1);
 			tileVec.get(y*17+(x-1)).setBombStatus(-3);//Left Water
+
+			tempObsStat= tileVec.get(y*17+(x-2)).getObs();
 			if(player.power==2 && k == 1 && (
-					tileVec.get(y*17+(x-2)).getObs() == 1 ||
-					tileVec.get(y*17+(x-2)).getObs() == 2 ||
-					tileVec.get(y*17+(x-2)).getObs() == 3 ||
-					tileVec.get(y*17+(x-2)).getObs() == -1) ){
+				tempObsStat == 1 || tempObsStat == 2 ||
+				tempObsStat == 3 || tempObsStat == -1) ){
 
 				Timer timeruu= new Timer(true);
 				TimerTask taskuu= new TimerTask(){
@@ -220,13 +215,12 @@ public class Bomb{
 				player.drawMe(drawingCanvas);
 			}
 		}//left
-		k=0;
-		if(tileVec.get(y*17+(x+1)).getObs() == 1 ||
-				tileVec.get(y*17+(x+1)).getObs() == 2 ||
-				tileVec.get(y*17+(x+1)).getObs() == 3 ||
-				tileVec.get(y*17+(x+1)).getObs() == -1 ){
-			if(tileVec.get(y*17+(x+1)).getObs() == -1)
-				k=1;
+
+		k =0;
+		tempObsStat= tileVec.get(y*17+(x+1)).getObs();
+		if(tempObsStat == 1 || tempObsStat == 2 || tempObsStat == 3 || tempObsStat == -1 ){
+			if(tempObsStat == -1)
+				k =1;
 			Timer timeru= new Timer(true);
 			TimerTask tasku= new TimerTask() {
 				@Override
@@ -245,11 +239,11 @@ public class Bomb{
 			//		tasku.cancel();
 			tileVec.get(y*17+(x+1)).setObs(-1);
 			tileVec.get(y*17+(x+1)).setBombStatus(-4);//Right Water
+
+			tempObsStat= tileVec.get(y*17+(x+2)).getObs();
 			if(player.power==2 && k == 1 &&  (
-					tileVec.get(y*17+(x+2)).getObs() == 1 ||
-					tileVec.get(y*17+(x+2)).getObs() == 2 ||
-					tileVec.get(y*17+(x+2)).getObs() == 3 ||
-					tileVec.get(y*17+(x+2)).getObs() == -1) ) {
+				tempObsStat == 1 || tempObsStat == 2 ||
+				tempObsStat == 3 || tempObsStat == -1) ) {
 
 				Timer timeruu = new Timer(true);
 				TimerTask taskuu = new TimerTask() {
@@ -273,10 +267,11 @@ public class Bomb{
 				player.drawMe(drawingCanvas);
 			}
 		}//right
-		k=0;
+
+		k =0;
+		tempObsStat= tileVec.get(y*17+x).getObs();
 		if(tileVec.get(y*17+x).getBombStatus() == 1 ||
-				tileVec.get(y*17+x).getObs() == 4 ||
-				tileVec.get(y*17+x).getObs()  == -1 ) {
+				tempObsStat == 4 || tempObsStat  == -1 ) {
 			Timer timeru= new Timer(true);
 			TimerTask tasku= new TimerTask() {
 				@Override
