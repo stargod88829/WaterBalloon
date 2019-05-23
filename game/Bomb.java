@@ -30,6 +30,7 @@ public class Bomb{
 	public static Image right= new Image("image/waterball/right.png");
 	public static Image center= new Image("image/waterball/center.png");
 
+
 	File fxFile = new File("audio/FX/sfx_exp_shortest_soft3.wav");
 	private Media fx;
 	private MediaPlayer fxPlayer;
@@ -42,7 +43,7 @@ public class Bomb{
 
 		fx= new Media(fxFile.toURI().toString());
 		fxPlayer= new MediaPlayer(fx);
-//		fxPlayer.setVolume(0.6);
+		fxPlayer.setVolume(GameController.volume);
 	}
 //	Bomb(int xPos, int yPos, Canvas drawingCanvas){
 //		x= xPos; y= yPos;

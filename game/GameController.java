@@ -31,6 +31,9 @@ public class GameController {
 	@FXML private Slider fpsSlider;
 	@FXML private Label bombRangeLabel;
 	@FXML private Slider bombRangeSlider;
+	@FXML private Label volumeLabel;
+	@FXML private Slider volumeSlider;
+
 	private Timer aniTimer=new Timer(true);
 	private CanvasRedrawTask<Player> task;
 	// @FXML private Button upBtn;
@@ -69,6 +72,8 @@ public class GameController {
 	//@https://opengameart.org/content/the-adventure-begins-8-bit-remix
 	private Media bgm;
 	private MediaPlayer bgmPlayer;
+
+	public static double volume= 1;
 
 	public void initialize() {
 
@@ -164,9 +169,22 @@ public class GameController {
 				}
 		);
 
+		volumeSlider.valueProperty().addListener(
+				(ov, oldValue, newValue) -> {
+					int volPercent = newValue.intValue();
+					volumeLabel.setText("Media Volume: "+volPercent+"%");
+					volume= volPercent/100.0;
+
+					bgmPlayer.setVolume(0.6 * volume);
+					p1.resetFxPlayer();
+					p1.resetDeathFxPlayerPlayer();
+					System.out.println("Volume Updated: "+volume);
+				}
+		);
+
 		bgm= new Media(bgmFile.toURI().toString());
 		bgmPlayer= new MediaPlayer(bgm);
-		bgmPlayer.setVolume(0.6);
+		bgmPlayer.setVolume(0.6 * volume);
 		bgmPlayer.setAutoPlay(true);
 
 	}

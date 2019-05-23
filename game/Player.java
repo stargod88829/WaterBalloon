@@ -97,9 +97,11 @@ public class Player{
 
 		fx= new Media(fxFile.toURI().toString());
 		fxPlayer= new MediaPlayer(fx);
+		fxPlayer.setVolume(GameController.volume);
 
 		deathFx= new Media(deathFxFile.toURI().toString());
 		deathFxPlayer= new MediaPlayer(deathFx);
+		deathFxPlayer.setVolume(GameController.volume);
 
 	}
 
@@ -469,5 +471,12 @@ public class Player{
 	public static WritableImage getFrame(int idX, int idY, int size){
 		//WritableImage rtnTile = new WritableImage(charFrameReader_L, 16, 16, 16, 16);
 		return new WritableImage(frameReader, size*(idX-1), size*(idY-1), size, size);
+	}
+
+	public void resetFxPlayer(){
+		fxPlayer.setVolume(GameController.volume);
+	}
+	public void resetDeathFxPlayerPlayer(){
+		deathFxPlayer.setVolume(GameController.volume);
 	}
 }
