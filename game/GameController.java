@@ -13,6 +13,8 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.event.ActionEvent;
+import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.KeyEvent;
@@ -27,6 +29,8 @@ public class GameController {
 	@FXML private Canvas drawingCanvas;
 	@FXML private Button obsTestBtn;
 	@FXML private Button kbTestBtn;
+	@FXML private Label fpsLabel;
+	@FXML private Slider fpsSlider;
 	private Timer aniTimer=new Timer(true);
 	private CanvasRedrawTask<Player> task;
 	// @FXML private Button upBtn;
@@ -54,6 +58,7 @@ public class GameController {
 	private static PixelReader backReader = tileSet.getPixelReader();
 	public static int canvasXOffset= 160;
 	public static int canvasYOffset= 20;
+	private int fps= 10;
 
 	private String mapDataStr;
 	private String obstacleDataStr;
@@ -127,7 +132,23 @@ public class GameController {
 			public void run() {
 				task.requestRedraw(p1);
 			}
-		},0 , 100);
+		},0 , (int)(1./fps*1000));
+
+		fpsSlider.valueProperty().addListener(
+				(ov, oldValue, newValue) -> {
+					fps = newValue.intValue();
+					fpsLabel.setText("FPS: "+fps);
+					aniTimer.cancel();
+					aniTimer= new Timer(true);
+					aniTimer.schedule(new TimerTask() {
+						@Override
+						public void run() {
+							task.requestRedraw(p1);
+						}
+					},0,(int)(1./fps*1000));
+					System.out.println("Real FPS= "+(int)(1./fps*1000));
+				}
+		);
 	}
 
 //	ChangeListener<Boolean> boolHandler= new ChangeListener<Boolean>() {
