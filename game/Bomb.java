@@ -2,10 +2,14 @@ package game;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.Vector;
 import javafx.scene.image.Image;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -26,11 +30,19 @@ public class Bomb{
 	public static Image right= new Image("image/waterball/right.png");
 	public static Image center= new Image("image/waterball/center.png");
 
+	File fxFile = new File("audio/FX/sfx_exp_shortest_soft3.wav");
+	private Media fx;
+	private MediaPlayer fxPlayer;
+
 
 	Bomb(Player player, Canvas drawingCanvas){
 		this.player= player;
 		tileVec= GameController.tileVec;
 		this.drawingCanvas= drawingCanvas;
+
+		fx= new Media(fxFile.toURI().toString());
+		fxPlayer= new MediaPlayer(fx);
+//		fxPlayer.setVolume(0.6);
 	}
 //	Bomb(int xPos, int yPos, Canvas drawingCanvas){
 //		x= xPos; y= yPos;
@@ -136,7 +148,9 @@ public class Bomb{
 			}
 		};
 		timeru.schedule(tasku, timeLeft2);
-		player.setBombCount(player.getBombCount()-1);
+//		player.setBombCount(player.getBombCount()-1);
+
+		fxPlayer.play();
 	}
 
 

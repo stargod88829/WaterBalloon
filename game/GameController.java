@@ -1,16 +1,12 @@
 package game;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Stream;
 
-import javafx.beans.binding.BooleanBinding;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Label;
@@ -24,6 +20,8 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 
 public class GameController {
 	@FXML private Canvas drawingCanvas;
@@ -66,6 +64,11 @@ public class GameController {
 	private String obstacleDataStr;
 	private String bombsDataStr;
 	public static Vector<Tile> tileVec= new Vector<>();
+
+	File bgmFile = new File("audio/BGM/TheAdventureBegins8-bitRemix.wav");
+	//@https://opengameart.org/content/the-adventure-begins-8-bit-remix
+	private Media bgm;
+	private MediaPlayer bgmPlayer;
 
 	public void initialize() {
 
@@ -148,7 +151,7 @@ public class GameController {
 							task.requestRedraw(p1);
 						}
 					},0,(int)(1./fps*1000));
-					System.out.println("Real FPS= "+(int)(1./fps*1000));
+					System.out.println("Interval Updated= "+(int)(1./fps*1000));
 				}
 		);
 
@@ -160,6 +163,12 @@ public class GameController {
 					System.out.println("Bomb Range Updated: "+bombRange);
 				}
 		);
+
+		bgm= new Media(bgmFile.toURI().toString());
+		bgmPlayer= new MediaPlayer(bgm);
+		bgmPlayer.setVolume(0.6);
+		bgmPlayer.setAutoPlay(true);
+
 	}
 
 //	ChangeListener<Boolean> boolHandler= new ChangeListener<Boolean>() {

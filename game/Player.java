@@ -1,5 +1,6 @@
 package game;
 
+import java.io.File;
 import java.util.Vector;
 import javafx.scene.image.Image;
 //import javafx.scene.image.WritableImage;
@@ -8,6 +9,9 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyCode;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -54,6 +58,14 @@ public class Player{
 	private int bombCount= 0;
 	private int maxBombCount;
 
+	File fxFile = new File("audio/FX/sfx_movement_footsteps5.wav");
+	private Media fx;
+	private MediaPlayer fxPlayer;
+
+	File deathFxFile = new File("audio/FX/sfx_lowhealth_alarmloop5.wav");
+	private Media deathFx;
+	private MediaPlayer deathFxPlayer;
+
 	Player(int x, int y, Image meImg){
 		this.x= x;
 		this.y= y;
@@ -83,7 +95,11 @@ public class Player{
 //		}
 		charFrames= charFrames_R;
 
+		fx= new Media(fxFile.toURI().toString());
+		fxPlayer= new MediaPlayer(fx);
 
+		deathFx= new Media(deathFxFile.toURI().toString());
+		deathFxPlayer= new MediaPlayer(deathFx);
 
 	}
 
@@ -179,11 +195,11 @@ public class Player{
 
 		if(GameController.pressed.contains(KeyCode.SPACE)){//SPACE
 			checkAround();
-			if(bombCount < 5){
+//			if(bombCount < 5){
 
 				if (GameController.tileVec.get(y*17+x).getBombStatus() ==0 ) {
 
-					bombCount++;
+//					bombCount++;
 					System.out.println("\tIN SPACE "+bombCount);
 
 					GameController.tileVec.get(17*y+x).setBombStatus(1);
@@ -197,7 +213,7 @@ public class Player{
 //                    bombVector.elementAt(bombCount).putBomb(x, y);
                     bomb.putBomb(x,y);
 
-                }
+//                }
 			}
 //
 //				tileVec= bomb.getTileVec();
@@ -287,9 +303,17 @@ public class Player{
 				break;
 
 		}
+
 		frameCount++;
+		if(frameCount%2==0){
+//			fxPlayer= new MediaPlayer(fx);
+			fxPlayer.stop();
+			fxPlayer.play();
+		}
 		if(frameCount>frameInterval*(maxFrame-1))
 			frameCount=0;
+
+
 	}
 
 	private void changePosition() {
@@ -365,6 +389,7 @@ public class Player{
 				x=1; y=1;
 				abs_x= GameController.canvasXOffset+x*40;
 				abs_y= GameController.canvasYOffset+y*40;
+
 			}
 			gb.drawImage(charFrames.elementAt(frameCount/frameInterval), abs_x, abs_y, 40, 40);
 		}
