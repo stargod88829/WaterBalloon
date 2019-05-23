@@ -191,10 +191,11 @@ public class Player{
 //					if(obsStatus[Player.CENTER]==-1)
 //						drawMe(drawingCanvas);
 
-		//				Bomb bomb= new Bomb(this,drawingCanvas);
+					Bomb bomb= new Bomb(this,drawingCanvas);
 
 //                    bombVector.add(new Bomb(this,drawingCanvas));
-                    bombVector.elementAt(bombCount).putBomb(x, y);
+//                    bombVector.elementAt(bombCount).putBomb(x, y);
+                    bomb.putBomb(x,y);
 
                 }
 			}
