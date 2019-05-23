@@ -31,6 +31,8 @@ public class GameController {
 	@FXML private Button kbTestBtn;
 	@FXML private Label fpsLabel;
 	@FXML private Slider fpsSlider;
+	@FXML private Label bombRangeLabel;
+	@FXML private Slider bombRangeSlider;
 	private Timer aniTimer=new Timer(true);
 	private CanvasRedrawTask<Player> task;
 	// @FXML private Button upBtn;
@@ -147,6 +149,15 @@ public class GameController {
 						}
 					},0,(int)(1./fps*1000));
 					System.out.println("Real FPS= "+(int)(1./fps*1000));
+				}
+		);
+
+		bombRangeSlider.valueProperty().addListener(
+				(ov, oldValue, newValue) -> {
+					int bombRange = newValue.intValue();
+					bombRangeLabel.setText("Bomb Range: "+bombRange);
+					p1.setPower(bombRange);
+					System.out.println("Bomb Range Updated: "+bombRange);
 				}
 		);
 	}

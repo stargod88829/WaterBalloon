@@ -41,7 +41,9 @@
                      </font>
                   </Button>
                   <Label fx:id="fpsLabel" layoutX="14.0" layoutY="231.0" text="FPS: 10" />
-                  <Slider fx:id="fpsSlider" blockIncrement="1.0" layoutX="5.0" layoutY="256.0" max="120.0" min="1.0" showTickLabels="true" showTickMarks="true" value="10.0" />
+                  <Slider fx:id="fpsSlider" blockIncrement="1.0" layoutX="5.0" layoutY="246.0" max="120.0" min="1.0" showTickLabels="true" showTickMarks="true" value="10.0" />
+                  <Label fx:id="bombRangeLabel" layoutX="14.0" layoutY="306.0" text="Bomb Range: 2" />
+                  <Slider fx:id="bombRangeSlider" blockIncrement="1.0" layoutX="5.0" layoutY="321.0" max="6.0" min="1.0" showTickLabels="true" showTickMarks="true" value="2.0" />
                </children>
             </AnchorPane>
         </content>

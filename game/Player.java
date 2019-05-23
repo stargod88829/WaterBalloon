@@ -436,6 +436,10 @@ public class Player{
 		dx =0; dy =0;
 	}
 
+	public void setPower(int power) {
+		this.power = power;
+	}
+
 	public static WritableImage getFrame(int idX, int idY, int size){
 		//WritableImage rtnTile = new WritableImage(charFrameReader_L, 16, 16, 16, 16);
 		return new WritableImage(frameReader, size*(idX-1), size*(idY-1), size, size);

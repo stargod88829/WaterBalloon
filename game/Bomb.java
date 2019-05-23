@@ -45,7 +45,7 @@ public class Bomb{
 		TimerTask task = new TimerTask() {
 			@Override
 			public void run() {
-				detonate();
+				detonate(1);
 			}
 		};
 		timer.schedule(task, timeLeft);
@@ -304,6 +304,95 @@ public class Bomb{
 //		player.bombVector.remove(this);
 		player.setBombCount(player.getBombCount()-1);
 	}
+
+
+	public void detonate(int dull){
+//		int k = 0;
+		int tempObsStat;
+		Vector<Integer> destroyedTileVec= new Vector<>();
+		System.out.println("BOOM! @("+x+","+y+")");
+
+		//UP
+		for(int i=1; i<= player.power; i++){
+			System.out.println("BombUp");
+			tempObsStat = tileVec.get((y - i )*17+x).getObs();
+			System.out.println("\tObsStat= "+tempObsStat);
+			if(tempObsStat == 1 || tempObsStat == 2 || tempObsStat == 3 || tempObsStat == -1 ){
+
+				tileVec.get((y-i)*17+x).setObs(-1);
+				tileVec.get((y-i)*17+x).setBombStatus(-1);
+				destroyedTileVec.add((y-i)*17+x);
+			}
+			if(tempObsStat != -1)
+				break;
+		}
+		//DOWN
+		for(int i=1; i<= player.power; i++){
+			System.out.println("BombDown");
+			tempObsStat = tileVec.get((y + i )*17+x).getObs();
+			System.out.println("\tObsStat= "+tempObsStat);
+			if(tempObsStat == 1 || tempObsStat == 2 || tempObsStat == 3 || tempObsStat == -1 ){
+
+				tileVec.get((y+i)*17+x).setObs(-1);
+				tileVec.get((y+i)*17+x).setBombStatus(-1);
+				destroyedTileVec.add((y+i)*17+x);
+			}
+			if(tempObsStat != -1)
+				break;
+		}
+
+		//LEFT
+		for(int i=1; i<= player.power; i++){
+			System.out.println("BombLeft:");
+			tempObsStat = tileVec.get(y*17+(x - i)).getObs();
+			System.out.println("\tObsStat= "+tempObsStat);
+			if(tempObsStat == 1 || tempObsStat == 2 || tempObsStat == 3 || tempObsStat == -1 ){
+
+				tileVec.get(y*17+(x-i)).setObs(-1);
+				tileVec.get(y*17+(x-i)).setBombStatus(-1);
+				destroyedTileVec.add(y*17+(x-i));
+			}
+			if(tempObsStat != -1)
+				break;
+		}
+
+		//RIGHT
+		for(int i=1; i<= player.power; i++){
+			System.out.println("BombRight:");
+			tempObsStat = tileVec.get(y*17+(x + i)).getObs();
+			System.out.println("\tObsStat= "+tempObsStat);
+			if(tempObsStat == 1 || tempObsStat == 2 || tempObsStat == 3 || tempObsStat == -1 ){
+
+				tileVec.get(y*17+(x+i)).setObs(-1);
+				tileVec.get(y*17+(x+i)).setBombStatus(-1);
+				destroyedTileVec.add(y*17+(x+i));
+			}
+			if(tempObsStat != -1)
+				break;
+		}
+
+		//CENTER
+		tempObsStat= tileVec.get(y*17+x).getObs();
+		if(tileVec.get(y*17+x).getBombStatus() == 1 ||
+				tempObsStat == 4 || tempObsStat  == -1 ) {
+			tileVec.get(y*17+x).setObs(-1);
+			tileVec.get(y*17+x).setBombStatus(-5);
+			destroyedTileVec.add(y*17+x);
+		}
+
+		Timer timeru= new Timer(true);
+		TimerTask tasku= new TimerTask(){
+			@Override
+			public void run() {
+				for(int pos:destroyedTileVec)
+					tileVec.get(pos).setBombStatus(0);
+				System.out.println("\t!!IN Tasku (UP)!!");
+			}
+		};
+		timeru.schedule(tasku, timeLeft2);
+		player.setBombCount(player.getBombCount()-1);
+	}
+
 
 //	public Vector<Tile> getTileVec(){
 //		return tileVec;
