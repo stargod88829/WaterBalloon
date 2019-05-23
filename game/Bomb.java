@@ -45,7 +45,7 @@ public class Bomb{
 		TimerTask task = new TimerTask() {
 			@Override
 			public void run() {
-				detonate(1);
+				detonate();
 			}
 		};
 		timer.schedule(task, timeLeft);
