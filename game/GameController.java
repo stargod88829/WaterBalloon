@@ -9,6 +9,9 @@ import java.util.stream.Stream;
 
 import javafx.fxml.FXML;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.input.KeyCode;
@@ -22,6 +25,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.stage.Stage;
 
 public class GameController {
 	@FXML private Canvas drawingCanvas;
@@ -33,6 +37,7 @@ public class GameController {
 	@FXML private Slider bombRangeSlider;
 	@FXML private Label volumeLabel;
 	@FXML private Slider volumeSlider;
+	@FXML private Button settingsBtn;
 
 	private Timer aniTimer=new Timer(true);
 	private CanvasRedrawTask<Player> task;
@@ -47,7 +52,7 @@ public class GameController {
 	public static final int X_BLOCKS=17;
 	public static final int Y_BLOCKS=15;
 
-	public static boolean inObsTest= false;
+	public static boolean inObsTest= true;
 	public static boolean inKBTest= true;
 	public static final Set<KeyCode> pressed = new HashSet<KeyCode>();
 
@@ -61,7 +66,7 @@ public class GameController {
 	private static PixelReader backReader = tileSet.getPixelReader();
 	public static int canvasXOffset= 160;
 	public static int canvasYOffset= 20;
-	private int fps= 10;
+	public static int fps= 10;
 
 	private String mapDataStr;
 	private String obstacleDataStr;
@@ -71,9 +76,10 @@ public class GameController {
 	File bgmFile = new File("audio/BGM/TheAdventureBegins8-bitRemix.wav");
 	//@https://opengameart.org/content/the-adventure-begins-8-bit-remix
 	private Media bgm;
-	private MediaPlayer bgmPlayer;
+	public static MediaPlayer bgmPlayer;
 
 	public static double volume= 1;
+	public static double fxVolume= 1;
 
 	public void initialize() {
 
@@ -159,6 +165,7 @@ public class GameController {
 					System.out.println("Interval Updated= "+(int)(1./fps*1000));
 				}
 		);
+		fpsSlider.setValue(fps);
 
 		bombRangeSlider.valueProperty().addListener(
 				(ov, oldValue, newValue) -> {
@@ -181,11 +188,13 @@ public class GameController {
 					System.out.println("Volume Updated: "+volume);
 				}
 		);
+		volumeSlider.setValue(volume*100);
 
 		bgm= new Media(bgmFile.toURI().toString());
 		bgmPlayer= new MediaPlayer(bgm);
 		bgmPlayer.setVolume(0.6 * volume);
 		bgmPlayer.setAutoPlay(true);
+		bgmPlayer.setCycleCount(MediaPlayer.INDEFINITE);
 
 	}
 
@@ -308,6 +317,17 @@ public class GameController {
 		}
 	}
 
+	@FXML
+	private void settingsBtnPressed(ActionEvent e) throws Exception {
+		Parent root =
+				FXMLLoader.load(getClass().getResource("SettingsPage.fxml"));
+
+		Scene scene = new Scene(root);
+		Stage stage= new Stage();
+		stage.setTitle("Settings");
+		stage.setScene(scene);
+		stage.show();
+	}
 
 	public void keyPressed(KeyEvent e) {
 		//System.out.println("keyPressed()");
@@ -605,6 +625,8 @@ public class GameController {
 
         return contentBuilder.toString();
     }
+
+
 
 //    public boolean isInObsTest(){
 //		return inObsTest;

@@ -10,10 +10,10 @@ public class MainGame extends Application {
 	@Override
 	public void start(Stage stage) throws Exception {
 		Parent root =
-			FXMLLoader.load(getClass().getResource("MainGame.fxml"));
+			FXMLLoader.load(getClass().getResource("MainMenu.fxml"));
 
 		Scene scene = new Scene(root);
-		stage.setTitle("GameWindow");
+		stage.setTitle("MainMenu");
 		stage.setScene(scene);
 		stage.show();
 	}

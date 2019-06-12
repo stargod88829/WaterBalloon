@@ -43,7 +43,7 @@ public class Bomb{
 
 		fx= new Media(fxFile.toURI().toString());
 		fxPlayer= new MediaPlayer(fx);
-		fxPlayer.setVolume(GameController.volume);
+		fxPlayer.setVolume(GameController.fxVolume);
 	}
 //	Bomb(int xPos, int yPos, Canvas drawingCanvas){
 //		x= xPos; y= yPos;

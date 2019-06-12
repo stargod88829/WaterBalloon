@@ -11,6 +11,7 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyCode;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.util.Duration;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -97,11 +98,11 @@ public class Player{
 
 		fx= new Media(fxFile.toURI().toString());
 		fxPlayer= new MediaPlayer(fx);
-		fxPlayer.setVolume(GameController.volume);
+		fxPlayer.setVolume(GameController.fxVolume);
 
 		deathFx= new Media(deathFxFile.toURI().toString());
 		deathFxPlayer= new MediaPlayer(deathFx);
-		deathFxPlayer.setVolume(GameController.volume);
+		deathFxPlayer.setVolume(GameController.fxVolume);
 
 	}
 
@@ -309,7 +310,7 @@ public class Player{
 		frameCount++;
 		if(frameCount%2==0){
 //			fxPlayer= new MediaPlayer(fx);
-			fxPlayer.stop();
+			fxPlayer.seek(Duration.ZERO);
 			fxPlayer.play();
 		}
 		if(frameCount>frameInterval*(maxFrame-1))
