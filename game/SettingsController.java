@@ -27,7 +27,7 @@ import java.io.File;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class SettingsController {
+public class SettingsController extends MainMenuController{
 	@FXML private Slider bgmSlider;
 	@FXML private Slider fxSlider;
 	@FXML private ComboBox fpsSelect;
@@ -37,6 +37,7 @@ public class SettingsController {
 
 	private double volume= 1;
 	private double oldVolume= 1;
+	public static double defaultVol;
 	private double fxVolume= 1;
 	private int fps=120;
 	private boolean muted= false;
@@ -44,7 +45,10 @@ public class SettingsController {
 	private Image mutedImg= new Image("image/86932_mute.png");
 
 	public void initialize() {
+		volume=GameController.volume;
+		defaultVol=volume;
 		bgmSlider.setValue(GameController.volume*100);
+		fxVolume=GameController.fxVolume;
 		fxSlider.setValue(GameController.fxVolume*100);
 
 		bgmSlider.valueProperty().addListener(
@@ -52,6 +56,10 @@ public class SettingsController {
 					int volPercent = newValue.intValue();
 					volume= volPercent/100.0;
 					MainMenuController.musicPlayer.setVolume(volume);
+					if(volPercent!=0){
+						muted=false;
+						muteIcon.setImage(unmutedImg);
+					}
 				}
 		);
 		fxSlider.valueProperty().addListener(
@@ -62,6 +70,7 @@ public class SettingsController {
 		);
 
 		fpsSelect.getItems().addAll("High","Normal","Low");
+		fps=GameController.fps;
 		switch (GameController.fps){
 			case 120:
 				fpsSelect.setValue("High");
@@ -79,6 +88,8 @@ public class SettingsController {
 
 
 	}
+
+
 
 	@FXML
 	private void fpsOnAction(ActionEvent e){
@@ -147,6 +158,9 @@ public class SettingsController {
 		GameController.volume= volume;
 		GameController.fxVolume= fxVolume;
 		GameController.fps= fps;
+		MainMenuController.selectionPlayer.setVolume(fxVolume);
+		MainMenuController.selectionPlayer2.setVolume(fxVolume);
+		MainMenuController.enterPlayer.setVolume(fxVolume);
 		Stage stage = (Stage) okBtn.getScene().getWindow();
 		stage.close();
 	}

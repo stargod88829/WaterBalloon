@@ -1,11 +1,12 @@
 package game;
 
 import java.io.File;
+import java.util.List;
 import java.util.Vector;
 import javafx.scene.image.Image;
-//import javafx.scene.image.WritableImage;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyCode;
@@ -22,15 +23,23 @@ public class Player{
 	public static final int DOWN=2;
 	public static final int LEFT=3;
 	public static final int RIGHT=4;
+	public static final int LEFTUP=5;
+	public static final int LEFTDOWN=6;
+	public static final int RIGHTUP=7;
+	public static final int RIGHTDOWN=8;
 //	public enum Nav{UP, DOWN, LEFT, RIGHT};
-	private Boolean[] navFlag= new Boolean[5];
+//	private Boolean[] navFlag= new Boolean[5];
 
 	private Timer moveTimer;
 	private TimerTask moveTask;
 
 	public int x;
 	public int y;
-	public int power=2;
+
+	public int speed=2;
+	public int power=1;
+	public int quant=2;
+
 	public Image meImg;
 	private static Image foxChar_L= new Image("image/fox-run-alt.png");
 	private static Image foxChar_R= new Image("image/fox-run.png");
@@ -46,17 +55,24 @@ public class Player{
 //	private Vector<Image> leafFrames_R= new Vector<>();
 	private int frameCount;
 	private int maxFrame;
-	private int frameInterval;
+//	private int frameInterval;
 
 	private Canvas drawingCanvas;
+	private ImageView speedStat;
+	private ImageView powerStat;
+	private ImageView quantStat;
+
 	public double abs_x;
 	public double abs_y;
 	private double dx;
 	private double dy;
-	public int[] obsStatus= new int[5];
-	public int[] bombStatus= new int[5];
+	private double inc=5;
+	public int nowDir=0;
+
+	public int[] obsStatus= new int[9];
+	public int[] bombStatus= new int[9];
 	public Vector<Bomb> bombVector= new Vector<Bomb>(5);
-	private int bombCount= 0;
+	public int bombCount= 0;
 	private int maxBombCount;
 
 	File fxFile = new File("audio/FX/sfx_movement_footsteps5.wav");
@@ -77,11 +93,11 @@ public class Player{
 		dy = 0;
 //		this.drawingCanvas= drawingCanvas;
 //		moveTimer = new Timer(true);
-		maxBombCount = 5;
+//		maxBombCount = 5;
 
 		maxFrame= 6;
 		frameCount= 0;
-		frameInterval= 1;
+//		frameInterval= 1;
 		for (int i=1; i<=6; i++){
 			frameReader = foxChar_L.getPixelReader();
 			charFrames_L.add(getFrame(i,1,24));
@@ -127,16 +143,21 @@ public class Player{
 //		moveTimer.purge();
 		System.out.println("Move Timer Stopped");
 	}
+
 	public void move(){
-
-
 		if(GameController.pressed.contains(KeyCode.UP)){//UP
 //			System.out.println("UP");
 			checkAround();
-			if( (obsStatus[Player.UP]==-1 || obsStatus[Player.UP]==4) && bombStatus[Player.UP]==0)
+			if( (obsStatus[Player.UP]==-1 || obsStatus[Player.UP]==4) && bombStatus[Player.UP]<=0)
 			{
 				move(Player.UP);
 				System.out.println("MOVED UP");
+				if( GameController.pressed.contains(KeyCode.LEFT) &&
+						(obsStatus[Player.LEFTUP]==-1 || obsStatus[Player.LEFTUP]==4) && bombStatus[Player.LEFTUP]<=0) {
+					move(Player.LEFT);
+				}
+
+
 				//print the character
 //				renderTiles();
 //				if(obsStatus[Player.CENTER]==-1)
@@ -163,9 +184,6 @@ public class Player{
 			checkAround();
 
 			charFrames= charFrames_L;
-
-
-			charFrames= charFrames_L;
 			if( (obsStatus[Player.LEFT]==-1 || obsStatus[Player.LEFT]==4) && bombStatus[Player.LEFT]==0)
 			{
 				move(Player.LEFT);
@@ -182,8 +200,6 @@ public class Player{
 			checkAround();
 
 			charFrames= charFrames_R;
-
-
 			if( (obsStatus[Player.RIGHT]==-1 || obsStatus[Player.RIGHT]==4) && bombStatus[Player.RIGHT]==0)
 			{
 				move(Player.RIGHT);
@@ -196,27 +212,325 @@ public class Player{
 //			navFlag[RIGHT]=true;
 		}
 
+//		checkAround();
+//		KeyCode head=GameController.pressed.get(0);
+//		if(GameController.pressed.contains(KeyCode.UP) && GameController.pressed.size()==1){
+//			if((obsStatus[UP]==-1 || obsStatus[UP]==4) && bombStatus[UP]<=0) {
+//				move(UP);
+//				nowDir=UP;
+//			}
+//			else
+//				nowDir=0;
+//		}
+//		if(GameController.pressed.contains(KeyCode.DOWN) && GameController.pressed.size()==1){
+//			if((obsStatus[DOWN]==-1 || obsStatus[DOWN]==4) && bombStatus[DOWN]<=0) {
+//				move(DOWN);
+//				nowDir=DOWN;
+//			}
+//			else
+//				nowDir=0;
+//		}
+//		if(GameController.pressed.contains(KeyCode.LEFT) && GameController.pressed.size()==1){
+//			if((obsStatus[LEFT]==-1 || obsStatus[LEFT]==4) && bombStatus[LEFT]<=0) {
+//				move(LEFT);
+//				nowDir=LEFT;
+//			}
+//			else
+//				nowDir=0;
+//		}
+//		if(GameController.pressed.contains(KeyCode.RIGHT) && GameController.pressed.size()==1){
+//			if((obsStatus[RIGHT]==-1 || obsStatus[RIGHT]==4) && bombStatus[RIGHT]<=0) {
+//				move(RIGHT);
+//				nowDir=RIGHT;
+//			}
+//			else
+//				nowDir=0;
+//		}
+//
+//		if(GameController.pressed.contains(KeyCode.UP)
+//				&& GameController.pressed.contains(KeyCode.LEFT)
+//				&& GameController.pressed.size()==2){
+//			if((obsStatus[UP]==-1 || obsStatus[UP]==4) && bombStatus[UP]<=0) {
+//				if((obsStatus[LEFT]==-1 || obsStatus[LEFT]==4) && bombStatus[LEFT]<=0) {
+//					if((obsStatus[LEFTUP]==-1 || obsStatus[LEFTUP]==4) && bombStatus[LEFTUP]<=0) {
+//						move(LEFTUP);
+//					}
+//					else
+//						move(nowDir);
+//				}
+//			}
+//		}
+//
+//		if(head==KeyCode.UP){
+//			if((obsStatus[UP]==-1 || obsStatus[UP]==4) && bombStatus[UP]<=0)
+//			if(GameController.pressed.contains(KeyCode.LEFT)){
+//				if((obsStatus[LEFT]==-1 || obsStatus[LEFT]==4) && bombStatus[LEFT]<=0)
+//				if((obsStatus[LEFTUP]==-1 || obsStatus[LEFTUP]==4) && bombStatus[LEFTUP]<=0)
+//				move(LEFTUP);
+//				else
+//					move(UP);
+//				else
+//					move(UP);
+//			}
+//			else if(GameController.pressed.contains(KeyCode.RIGHT)){
+//				if((obsStatus[RIGHT]==-1 || obsStatus[RIGHT]==4) && bombStatus[RIGHT]<=0)
+//				if((obsStatus[RIGHTUP]==-1 || obsStatus[RIGHTUP]==4) && bombStatus[RIGHTUP]<=0)
+//				move(RIGHTUP);
+//				else
+//					move(UP);
+//				else
+//					move(UP);
+//			}
+//			else
+//				move(UP);
+//		}
+//		else if(head==KeyCode.DOWN){
+//			if((obsStatus[DOWN]==-1 || obsStatus[DOWN]==4) && bombStatus[DOWN]<=0)
+//			if(GameController.pressed.contains(KeyCode.LEFT)){
+//				if((obsStatus[LEFT]==-1 || obsStatus[LEFT]==4) && bombStatus[LEFT]<=0)
+//				if((obsStatus[LEFTDOWN]==-1 || obsStatus[LEFTDOWN]==4) && bombStatus[LEFTDOWN]<=0)
+//					move(LEFTDOWN);
+//				else
+//					move(DOWN);
+//				else
+//					move(DOWN);
+//			}
+//			else if(GameController.pressed.contains(KeyCode.RIGHT)){
+//				if((obsStatus[RIGHT]==-1 || obsStatus[RIGHT]==4) && bombStatus[RIGHT]<=0)
+//				if((obsStatus[RIGHTDOWN]==-1 || obsStatus[RIGHTDOWN]==4) && bombStatus[RIGHTDOWN]<=0)
+//					move(RIGHTDOWN);
+//				else
+//					move(DOWN);
+//				else
+//					move(DOWN);
+//			}
+//			else
+//				move(DOWN);
+//		}
+//		else if(head==KeyCode.LEFT){
+//			if((obsStatus[LEFT]==-1 || obsStatus[LEFT]==4) && bombStatus[LEFT]<=0)
+//			if(GameController.pressed.contains(KeyCode.UP)){
+//				if((obsStatus[UP]==-1 || obsStatus[UP]==4) && bombStatus[UP]<=0)
+//				if((obsStatus[LEFTUP]==-1 || obsStatus[LEFTUP]==4) && bombStatus[LEFTUP]<=0)
+//					move(LEFTUP);
+//				else
+//					move(LEFT);
+//				else
+//					move(LEFT);
+//			}
+//			else if(GameController.pressed.contains(KeyCode.DOWN)){
+//				if((obsStatus[DOWN]==-1 || obsStatus[DOWN]==4) && bombStatus[DOWN]<=0)
+//				if((obsStatus[LEFTDOWN]==-1 || obsStatus[LEFTDOWN]==4) && bombStatus[LEFTDOWN]<=0)
+//					move(LEFTDOWN);
+//				else
+//					move(LEFT);
+//				else
+//					move(LEFT);
+//			}
+//			else
+//				move(LEFT);
+//		}
+//		else if(head==KeyCode.RIGHT){
+//			if((obsStatus[RIGHT]==-1 || obsStatus[RIGHT]==4) && bombStatus[RIGHT]<=0)
+//			if(GameController.pressed.contains(KeyCode.UP)){
+//				if((obsStatus[UP]==-1 || obsStatus[UP]==4) && bombStatus[UP]<=0)
+//				if((obsStatus[RIGHTUP]==-1 || obsStatus[RIGHTUP]==4) && bombStatus[RIGHTUP]<=0)
+//					move(RIGHTUP);
+//				else
+//					move(RIGHT);
+//				else
+//					move(RIGHT);
+//			}
+//			else if(GameController.pressed.contains(KeyCode.DOWN)){
+//				if((obsStatus[DOWN]==-1 || obsStatus[DOWN]==4) && bombStatus[DOWN]<=0)
+//				if((obsStatus[RIGHTDOWN]==-1 || obsStatus[RIGHTDOWN]==4) && bombStatus[RIGHTDOWN]<=0)
+//					move(RIGHTDOWN);
+//				else
+//					move(RIGHT);
+//				else
+//					move(RIGHT);
+//			}
+//			else
+//				move(RIGHT);
+//		}
+
+
+//		if(GameController.pressed.contains(KeyCode.UP)){//UP
+//
+////			System.out.println("UP");
+//			checkAround();
+//			if( (obsStatus[Player.UP]==-1 || obsStatus[Player.UP]==4) && bombStatus[Player.UP]<=0)
+//			{
+//				move(Player.UP);
+//				System.out.println("MOVED UP");
+//			}
+//
+////			if( (obsStatus[UP]>=0 && obsStatus[UP]<=3)
+////					|| obsStatus[UP]==5 || bombStatus[UP]==1)
+////			{
+////				System.out.println("UP Rejected");
+////			}
+////			else{
+////				if(GameController.pressed.contains(KeyCode.LEFT))
+////					if( (obsStatus[LEFTUP]>=0 && obsStatus[LEFTUP]<=3)
+////							|| obsStatus[LEFTUP]==5 || bombStatus[LEFTUP]==1)
+////					{
+////						System.out.println("LEFTUP Rejected");
+////					}
+////					else
+////						move(LEFT);
+////
+////				if(GameController.pressed.contains(KeyCode.RIGHT))
+////					if( (obsStatus[RIGHTUP]>=0 && obsStatus[RIGHTUP]<=3)
+////							|| obsStatus[RIGHTUP]==5 || bombStatus[RIGHTUP]==1)
+////					{
+////						System.out.println("RIGHTUP Rejected");
+////					}
+////					else
+////						move(RIGHT);
+////
+////				move(UP);
+////			}
+////			navFlag[UP]=true;
+//		}
+//
+//		else if(GameController.pressed.contains(KeyCode.DOWN)){//DOWN
+//			checkAround();
+//			if( (obsStatus[Player.DOWN]==-1 || obsStatus[Player.DOWN]==4) && bombStatus[Player.DOWN]<=0)
+//			{
+//				move(Player.DOWN);
+//				System.out.println("MOVED DOWN");
+//			}
+//
+////			if( (obsStatus[DOWN]>=0 && obsStatus[DOWN]<=3)
+////					|| obsStatus[DOWN]==5 || bombStatus[DOWN]==1)
+////			{
+////				System.out.println("DOWN Rejected");
+////			}
+////			else{
+////				if(GameController.pressed.contains(KeyCode.LEFT))
+////					if( (obsStatus[LEFTDOWN]>=0 && obsStatus[LEFTDOWN]<=3)
+////							|| obsStatus[LEFTDOWN]==5 || bombStatus[LEFTDOWN]==1)
+////					{
+////						System.out.println("LEFTDOWN Rejected");
+////					}
+////					else
+////						move(LEFT);
+////
+////				if(GameController.pressed.contains(KeyCode.RIGHT))
+////					if( (obsStatus[RIGHTDOWN]>=0 && obsStatus[RIGHTDOWN]<=3)
+////							|| obsStatus[RIGHTDOWN]==5 || bombStatus[RIGHTDOWN]==1)
+////					{
+////						System.out.println("RIGHTDOWN Rejected");
+////					}
+////					else
+////						move(RIGHT);
+////
+////				move(DOWN);
+////			}
+////			navFlag[DOWN]=true;
+//		}
+//
+//		else if(GameController.pressed.contains(KeyCode.LEFT)){//LEFT
+//			checkAround();
+//
+//			charFrames= charFrames_L;
+//
+//			if( (obsStatus[Player.LEFT]==-1 || obsStatus[Player.LEFT]==4) && bombStatus[Player.LEFT]<=0)
+//			{
+//				move(Player.LEFT);
+//				System.out.println("MOVED LEFT");
+//			}
+//
+////			if( (obsStatus[LEFT]>=0 && obsStatus[LEFT]<=3)
+////					|| obsStatus[LEFT]==5 || bombStatus[LEFT]==1)
+////			{
+////				System.out.println("LEFT Rejected");
+////			}
+////			else{
+////				if(GameController.pressed.contains(KeyCode.UP))
+////					if( (obsStatus[LEFTUP]>=0 && obsStatus[LEFTUP]<=3)
+////							|| obsStatus[LEFTUP]==5 || bombStatus[LEFTUP]==1)
+////					{
+////						System.out.println("LEFTUP Rejected");
+////					}
+////					else
+////						move(UP);
+////
+////				if(GameController.pressed.contains(KeyCode.DOWN))
+////					if( (obsStatus[LEFTDOWN]>=0 && obsStatus[LEFTDOWN]<=3)
+////							|| obsStatus[LEFTDOWN]==5 || bombStatus[LEFTDOWN]==1)
+////					{
+////						System.out.println("LEFTDOWN Rejected");
+////					}
+////					else
+////						move(DOWN);
+////
+////				move(LEFT);
+////			}
+////			navFlag[LEFT]=true;
+//		}
+//
+//		else if(GameController.pressed.contains(KeyCode.RIGHT)){//RIGHT
+//			checkAround();
+//
+//			charFrames= charFrames_R;
+//
+//
+//			if( (obsStatus[Player.RIGHT]==-1 || obsStatus[Player.RIGHT]==4) && bombStatus[Player.RIGHT]<=0)
+//			{
+//				move(Player.RIGHT);
+//				System.out.println("MOVED RIGHT");
+//			}
+//
+////			if( (obsStatus[RIGHT]>=0 && obsStatus[RIGHT]<=3)
+////					|| obsStatus[RIGHT]==5 || bombStatus[RIGHT]==1)
+////			{
+////				System.out.println("RIGHT Rejected");
+////			}
+////			else{
+////				if(GameController.pressed.contains(KeyCode.UP))
+////					if( (obsStatus[RIGHTUP]>=0 && obsStatus[RIGHTUP]<=3)
+////							|| obsStatus[RIGHTUP]==5 || bombStatus[RIGHTUP]==1)
+////					{
+////						System.out.println("RIGHTUP Rejected");
+////					}
+////					else
+////						move(UP);
+////
+////				if(GameController.pressed.contains(KeyCode.DOWN))
+////					if( (obsStatus[RIGHTDOWN]>=0 && obsStatus[RIGHTDOWN]<=3)
+////							|| obsStatus[RIGHTDOWN]==5 || bombStatus[RIGHTDOWN]==1)
+////					{
+////						System.out.println("RIGHTDOWN Rejected");
+////					}
+////					else
+////						move(DOWN);
+////
+////				move(RIGHT);
+////			}
+////			navFlag[RIGHT]=true;
+//		}
+
 		if(GameController.pressed.contains(KeyCode.SPACE)){//SPACE
 			checkAround();
-//			if(bombCount < 5){
+			if(bombCount < quant){
 
 				if (GameController.tileVec.get(y*17+x).getBombStatus() ==0 ) {
 
-//					bombCount++;
+
 					System.out.println("\tIN SPACE "+bombCount);
 
 					GameController.tileVec.get(17*y+x).setBombStatus(1);
-//					renderTiles();
-//					if(obsStatus[Player.CENTER]==-1)
-//						drawMe(drawingCanvas);
 
-					Bomb bomb= new Bomb(this,drawingCanvas);
+					Bomb bomb= new Bomb(this);
 
 //                    bombVector.add(new Bomb(this,drawingCanvas));
 //                    bombVector.elementAt(bombCount).putBomb(x, y);
                     bomb.putBomb(x,y);
+					bombCount++;
 
-//                }
+                }
 			}
 //
 //				tileVec= bomb.getTileVec();
@@ -230,16 +544,10 @@ public class Player{
 	public void move(int nav){
 		switch (nav){
 			case UP:
-//				incY--;
-//				if(incY==-20){
-//					y--;
-//				}
-//				if(incY<=-40)
-//					incY=0;
 				if(GameController.inObsTest){
 					dy=-1;
-					if((abs_x-GameController.canvasXOffset)%40==0)
-						abs_y-=10;
+					if(Math.abs(abs_x-GameController.canvasXOffset)%40==0)
+						abs_y-=inc;
 					changePosition();
 				}
 				else{
@@ -248,16 +556,10 @@ public class Player{
 
 				break;
 			case DOWN:
-//				incY++;
-//				if(incY==20){
-//					y++;
-//				}
-//				if(incY>=40)
-//					incY=0;
 				if(GameController.inObsTest){
 					dy=1;
-					if((abs_x-GameController.canvasXOffset)%40==0)
-						abs_y+=10;
+					if(Math.abs(abs_x-GameController.canvasXOffset)%40==0)
+						abs_y+=inc;
 					changePosition();
 				}
 				else{
@@ -266,16 +568,10 @@ public class Player{
 
 				break;
 			case LEFT:
-//				incX--;
-//				if(incX==-20){
-//					x--;
-//				}
-//				if(incX<=-40)
-//					incX=0;
 				if(GameController.inObsTest){
 					dx=-1;
-					if((abs_y-GameController.canvasYOffset)%40==0)
-						abs_x-=10;
+					if(Math.abs(abs_y-GameController.canvasYOffset)%40==0)
+						abs_x-=inc;
 					changePosition();
 				}
 				else{
@@ -285,16 +581,10 @@ public class Player{
 
 				break;
 			case RIGHT:
-//				incX++;
-//				if(incX==20){
-//					x++;
-//				}
-//				if(incX>=40)
-//					incX=0;
 				if(GameController.inObsTest){
 					dx=1;
-					if((abs_y-GameController.canvasYOffset)%40==0)
-						abs_x+=10;
+					if(Math.abs(abs_y-GameController.canvasYOffset)%40==0)
+						abs_x+=inc;
 					changePosition();
 				}
 				else {
@@ -302,27 +592,169 @@ public class Player{
 				}
 
 				break;
+
+			case LEFTUP:
+				if(GameController.inObsTest){
+//					if(Math.abs(abs_y-GameController.canvasYOffset)%40==0)
+
+					abs_x-=inc;
+					abs_y-=inc;
+					changePosition();
+				}
+				else {
+					x--;
+					y--;
+				}
+				break;
+			case LEFTDOWN:
+				if(GameController.inObsTest){
+//					if(Math.abs(abs_y-GameController.canvasYOffset)%40==0)
+
+					abs_x-=inc;
+					abs_y+=inc;
+					changePosition();
+				}
+				else {
+					x--;
+					y++;
+				}
+				break;
+			case RIGHTUP:
+				if(GameController.inObsTest){
+//					if(Math.abs(abs_y-GameController.canvasYOffset)%40==0)
+
+					abs_x+=inc;
+					abs_y-=inc;
+					changePosition();
+				}
+				else {
+					x++;
+					y--;
+				}
+				break;
+			case RIGHTDOWN:
+				if(GameController.inObsTest){
+//					if(Math.abs(abs_y-GameController.canvasYOffset)%40==0)
+
+					abs_x+=inc;
+					abs_y+=inc;
+					changePosition();
+				}
+				else {
+					x++;
+					y++;
+				}
+				break;
+
 			default:
 				break;
 
 		}
 
-		frameCount++;
+		if(frameCount<(maxFrame-1))
+			frameCount++;
+		else
+			frameCount=0;
 		if(frameCount%2==0){
 //			fxPlayer= new MediaPlayer(fx);
 			fxPlayer.seek(Duration.ZERO);
 			fxPlayer.play();
 		}
-		if(frameCount>frameInterval*(maxFrame-1))
-			frameCount=0;
+//		if(frameCount>frameInterval*(maxFrame-1))
+//			frameCount=0;
 
 
 	}
 
 	private void changePosition() {
-		if((abs_x- GameController.canvasXOffset)%40==0 && (abs_y-GameController.canvasYOffset)%40==0){
+		if(Math.abs(abs_x- GameController.canvasXOffset)%40==0 && Math.abs(abs_y-GameController.canvasYOffset)%40==0){
 			x=(int)((abs_x+20-GameController.canvasXOffset)/40);
 			y=(int)((abs_y+20-GameController.canvasYOffset)/40);
+		}
+//		switch (dir){
+//			case UP:
+//				x=(int)((abs_x+20-GameController.canvasXOffset)/40);
+//				y=(int)((abs_y+40-GameController.canvasYOffset)/40);
+//				break;
+//			case DOWN:
+//				x=(int)((abs_x+20-GameController.canvasXOffset)/40);
+//				y=(int)((abs_y-GameController.canvasYOffset)/40);
+//				break;
+//			case LEFT:
+//				x=(int)((abs_x+40-GameController.canvasXOffset)/40);
+//				y=(int)((abs_y+20-GameController.canvasYOffset)/40);
+//				break;
+//			case RIGHT:
+//				x=(int)((abs_x-GameController.canvasXOffset)/40);
+//				y=(int)((abs_y+20-GameController.canvasYOffset)/40);
+//				break;
+//			default:
+//				x=(int)((abs_x+20-GameController.canvasXOffset)/40);
+//				y=(int)((abs_y+20-GameController.canvasYOffset)/40);
+//				break;
+//		}
+
+		switch (GameController.tileVec.get(x+17*y).getItemStatus()){
+			case 1:
+				if(speed<7) {
+					speed++;
+					switch (speed){
+						case 1:
+							inc=4;
+							break;
+						case 2:
+							inc=5;
+							break;
+						case 3:
+							inc=8;
+							break;
+						case 4:
+							inc=10;
+							break;
+						case 5:
+							inc=20;
+							break;
+						default:
+							break;
+					}
+					speedStat.setImage(Item.SPEED[speed]);
+					System.out.println("\t\t###Speed up= "+speed);
+				}
+				GameController.tileVec.get(x+17*y).setItemStatus(0);
+			case 2:
+				if(power<5) {
+					power++;
+					powerStat.setImage(Item.POWER[power]);
+					System.out.println("\t\t###Power up= "+power);
+				}
+				GameController.tileVec.get(x+17*y).setItemStatus(0);
+				break;
+			case 3:
+				if(quant<5) {
+					quant++;
+					quantStat.setImage(Item.QUANT[quant]);
+					System.out.println("\t\t###Quant up= "+quant);
+				}
+				GameController.tileVec.get(x+17*y).setItemStatus(0);
+				break;
+			default:
+				GameController.tileVec.get(x+17*y).setItemStatus(0);
+				break;
+		}
+
+		switch (GameController.tileVec.get(x+17*y).getBombStatus()){
+			case -5:
+			case -4:
+			case -3:
+			case -2:
+			case -1:
+				x=1; y=1;
+				abs_x= GameController.canvasXOffset+x*40;
+				abs_y= GameController.canvasYOffset+y*40;
+				break;
+
+			default:
+				break;
 		}
 
 		System.out.println("abs_x= "+abs_x+", x= "+x);
@@ -336,11 +768,21 @@ public class Player{
 		obsStatus[LEFT]= GameController.tileVec.get(x-1+17*y).getObs();
 		obsStatus[RIGHT]= GameController.tileVec.get(x+1+17*y).getObs();
 
+		obsStatus[LEFTUP]= GameController.tileVec.get(x-1+17*(y-1)).getObs();
+		obsStatus[LEFTDOWN]= GameController.tileVec.get(x-1+17*(y+1)).getObs();
+		obsStatus[RIGHTUP]= GameController.tileVec.get(x+1+17*(y-1)).getObs();
+		obsStatus[RIGHTDOWN]= GameController.tileVec.get(x+1+17*(y+1)).getObs();
+
 		bombStatus[CENTER]= GameController.tileVec.get(x+17*y).getBombStatus();
 		bombStatus[UP]= GameController.tileVec.get(x+17*(y-1)).getBombStatus();
 		bombStatus[DOWN]= GameController.tileVec.get(x+17*(y+1)).getBombStatus();
 		bombStatus[LEFT]= GameController.tileVec.get(x-1+17*y).getBombStatus();
 		bombStatus[RIGHT]= GameController.tileVec.get(x+1+17*y).getBombStatus();
+
+		bombStatus[LEFTUP]= GameController.tileVec.get(x-1+17*(y-1)).getBombStatus();
+		bombStatus[LEFTDOWN]= GameController.tileVec.get(x-1+17*(y+1)).getBombStatus();
+		bombStatus[RIGHTUP]= GameController.tileVec.get(x+1+17*(y-1)).getBombStatus();
+		bombStatus[RIGHTDOWN]= GameController.tileVec.get(x+1+17*(y+1)).getBombStatus();
 	}
 
 	public void drawMe(){
@@ -353,14 +795,14 @@ public class Player{
 					abs_x= GameController.canvasXOffset+x*40;
 					abs_y= GameController.canvasYOffset+y*40;
 				}
-				gb.drawImage(charFrames.elementAt(frameCount/frameInterval), abs_x, abs_y, 40, 40);
+				gb.drawImage(charFrames.elementAt(frameCount), abs_x, abs_y, 40, 40);
 			}
 			else{
 
 				if(bombStatus[CENTER]<= -1 && bombStatus[CENTER]>= -5){
 					x=1; y=1;
 				}
-				gb.drawImage(charFrames.elementAt(frameCount/frameInterval), GameController.canvasXOffset+40*x, GameController.canvasYOffset+40*y, 40, 40);
+				gb.drawImage(charFrames.elementAt(frameCount), GameController.canvasXOffset+40*x, GameController.canvasYOffset+40*y, 40, 40);
 			}
 		}
 		else if(obsStatus[CENTER]== 4){
@@ -378,80 +820,12 @@ public class Player{
 	}
 	public void catchCanvas(Canvas drawingCanvas){
 		this.drawingCanvas= drawingCanvas;
-		bombVector.clear();
-		for(int i=0; i< maxBombCount; i++){
-			bombVector.add(new Bomb(this, drawingCanvas));
-		}
+
 	}
-
-	public void drawMe(Canvas drawingCanvas){
-		GraphicsContext gb = drawingCanvas.getGraphicsContext2D();
-		checkAround();
-		if(GameController.inObsTest){
-			if(bombStatus[CENTER]<= -1 && bombStatus[CENTER]>= -5){
-				x=1; y=1;
-				abs_x= GameController.canvasXOffset+x*40;
-				abs_y= GameController.canvasYOffset+y*40;
-
-			}
-			gb.drawImage(charFrames.elementAt(frameCount/frameInterval), abs_x, abs_y, 40, 40);
-		}
-		else{
-
-			if(bombStatus[CENTER]<= -1 && bombStatus[CENTER]>= -5){
-				x=1; y=1;
-			}
-			gb.drawImage(charFrames.elementAt(frameCount/frameInterval), GameController.canvasXOffset+40*x, GameController.canvasYOffset+40*y, 40, 40);
-		}
-	}
-
-	public void renderTiles(){
-
-		GraphicsContext gc = drawingCanvas.getGraphicsContext2D();
-		if(GameController.tileVec.size() < 15*17){
-			gc.drawImage(new Image("image/Error.png"),
-					(drawingCanvas.getWidth()-48)/2, (drawingCanvas.getHeight()-48)/2, 48, 48);
-			return;
-		}
-
-		for(int i= 0; i < 15; i++){
-			for(int j= 0; j < 17; j++){
-				gc.drawImage(GameController.tileVec.get(i*17+j).getBack(), GameController.canvasXOffset+40*j,
-						GameController.canvasYOffset+40*i, 40, 40);
-				gc.drawImage(GameController.tileVec.get(i*17+j).getFront(), GameController.canvasXOffset+40*j,
-						GameController.canvasYOffset+40*i, 40, 40);
-			}
-		}//Draw Obs and Background
-
-		for(int i= 0; i < 15; i++){
-			for(int j= 0; j < 17; j++){
-				if(GameController.tileVec.get(i*17+j).getObs() != 4){//Bush
-					if(GameController.tileVec.get(i*17+j).getBombStatus() == 1)
-						gc.drawImage(Bomb.pic, GameController.canvasXOffset+40*j,
-								GameController.canvasYOffset+40*i, 40, 40);
-
-					if (GameController.tileVec.get(i*17+j).getBombStatus() == -1)
-						gc.drawImage(Bomb.up, GameController.canvasXOffset+40*j,
-								GameController.canvasYOffset+40*i, 40, 40);
-
-					if (GameController.tileVec.get(i*17+j).getBombStatus() == -2)
-						gc.drawImage(Bomb.down, GameController.canvasXOffset+40*j,
-								GameController.canvasYOffset+40*i, 40, 40);
-
-					if (GameController.tileVec.get(i*17+j).getBombStatus() == -3)
-						gc.drawImage(Bomb.left, GameController.canvasXOffset+40*j,
-								GameController.canvasYOffset+40*i, 40, 40);
-
-					if (GameController.tileVec.get(i*17+j).getBombStatus() == -4)
-						gc.drawImage(Bomb.right, GameController.canvasXOffset+40*j,
-								GameController.canvasYOffset+40*i, 40, 40);
-
-					if (GameController.tileVec.get(i*17+j).getBombStatus() == -5)
-						gc.drawImage(Bomb.center, GameController.canvasXOffset+40*j,
-								GameController.canvasYOffset+40*i, 40, 40);
-				}
-			}
-		}//Draw Bomb
+	public void catchImageViews(ImageView speedStat, ImageView powerStat, ImageView quantStat){
+		this.speedStat= speedStat;
+		this.powerStat= powerStat;
+		this.quantStat= quantStat;
 	}
 
 	public int getBombCount() {
@@ -469,7 +843,7 @@ public class Player{
 		this.power = power;
 	}
 
-	public static WritableImage getFrame(int idX, int idY, int size){
+	private static WritableImage getFrame(int idX, int idY, int size){
 		//WritableImage rtnTile = new WritableImage(charFrameReader_L, 16, 16, 16, 16);
 		return new WritableImage(frameReader, size*(idX-1), size*(idY-1), size, size);
 	}

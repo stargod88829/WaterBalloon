@@ -3,6 +3,7 @@ package game;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.security.SecureRandom;
 import java.util.Vector;
 import javafx.scene.image.Image;
 import javafx.scene.canvas.Canvas;
@@ -14,11 +15,10 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 
-public class Bomb{
+public class Bomb extends Tile{
 	private int x;
 	private int y;
 	private Player player;
-	private Canvas drawingCanvas;
 	private long timeLeft= 3500;
 	private long timeLeft2= 500;
 	private Vector<Tile> tileVec;
@@ -36,10 +36,9 @@ public class Bomb{
 	private MediaPlayer fxPlayer;
 
 
-	Bomb(Player player, Canvas drawingCanvas){
+	Bomb(Player player){
 		this.player= player;
 		tileVec= GameController.tileVec;
-		this.drawingCanvas= drawingCanvas;
 
 		fx= new Media(fxFile.toURI().toString());
 		fxPlayer= new MediaPlayer(fx);
@@ -70,18 +69,24 @@ public class Bomb{
 		int tempObsStat;
 		Vector<Integer> destroyedTileVec= new Vector<>();
 		System.out.println("BOOM! @("+x+","+y+")");
+		SecureRandom rand= new SecureRandom();
 
 		//UP
 		for(int i=1; i<= player.power; i++){
 			System.out.println("BombUp");
 			tempObsStat = tileVec.get((y - i )*17+x).getObs();
 			System.out.println("\tObsStat= "+tempObsStat);
+			if (tileVec.get((y-i)*17+x).getItemStatus()!= 0)
+				tileVec.get((y-i)*17+x).setItemStatus(0);
 			if(tempObsStat == 1 || tempObsStat == 2 || tempObsStat == 3 || tempObsStat == -1 ){
 
 				tileVec.get((y-i)*17+x).setObs(-1);
 				tileVec.get((y-i)*17+x).setBombStatus(-1);
+				if(tempObsStat!=-1)
+					tileVec.get((y-i)*17+x).setItemStatus(rand.nextInt(5));
 				destroyedTileVec.add((y-i)*17+x);
 			}
+
 			if(tempObsStat != -1)
 				break;
 		}
@@ -90,12 +95,17 @@ public class Bomb{
 			System.out.println("BombDown");
 			tempObsStat = tileVec.get((y + i )*17+x).getObs();
 			System.out.println("\tObsStat= "+tempObsStat);
+			if (tileVec.get((y+i)*17+x).getItemStatus()!= 0)
+				tileVec.get((y+i)*17+x).setItemStatus(0);
 			if(tempObsStat == 1 || tempObsStat == 2 || tempObsStat == 3 || tempObsStat == -1 ){
 
 				tileVec.get((y+i)*17+x).setObs(-1);
 				tileVec.get((y+i)*17+x).setBombStatus(-1);
+				if(tempObsStat!=-1)
+					tileVec.get((y+i)*17+x).setItemStatus(rand.nextInt(5));
 				destroyedTileVec.add((y+i)*17+x);
 			}
+
 			if(tempObsStat != -1)
 				break;
 		}
@@ -105,12 +115,17 @@ public class Bomb{
 			System.out.println("BombLeft:");
 			tempObsStat = tileVec.get(y*17+(x - i)).getObs();
 			System.out.println("\tObsStat= "+tempObsStat);
+			if (tileVec.get(y*17+(x-i)).getItemStatus()!= 0)
+				tileVec.get(y*17+(x-i)).setItemStatus(0);
 			if(tempObsStat == 1 || tempObsStat == 2 || tempObsStat == 3 || tempObsStat == -1 ){
 
 				tileVec.get(y*17+(x-i)).setObs(-1);
 				tileVec.get(y*17+(x-i)).setBombStatus(-1);
+				if(tempObsStat!=-1)
+					tileVec.get(y*17+(x-i)).setItemStatus(rand.nextInt(5));
 				destroyedTileVec.add(y*17+(x-i));
 			}
+
 			if(tempObsStat != -1)
 				break;
 		}
@@ -120,12 +135,17 @@ public class Bomb{
 			System.out.println("BombRight:");
 			tempObsStat = tileVec.get(y*17+(x + i)).getObs();
 			System.out.println("\tObsStat= "+tempObsStat);
+			if (tileVec.get(y*17+(x+i)).getItemStatus()!= 0)
+				tileVec.get(y*17+(x+i)).setItemStatus(0);
 			if(tempObsStat == 1 || tempObsStat == 2 || tempObsStat == 3 || tempObsStat == -1 ){
 
 				tileVec.get(y*17+(x+i)).setObs(-1);
 				tileVec.get(y*17+(x+i)).setBombStatus(-1);
+				if(tempObsStat!=-1)
+					tileVec.get(y*17+(x+i)).setItemStatus(rand.nextInt(5));
 				destroyedTileVec.add(y*17+(x+i));
 			}
+
 			if(tempObsStat != -1)
 				break;
 		}
@@ -150,6 +170,7 @@ public class Bomb{
 		};
 		timeru.schedule(tasku, timeLeft2);
 //		player.setBombCount(player.getBombCount()-1);
+		player.bombCount--;
 
 		fxPlayer.play();
 	}
@@ -158,61 +179,6 @@ public class Bomb{
 //	public Vector<Tile> getTileVec(){
 //		return tileVec;
 //	}
-	public void renderTiles(){
-
-		GraphicsContext gc = drawingCanvas.getGraphicsContext2D();
-		if(tileVec.size() < 15*17){
-			gc.drawImage(new Image("image/Error.png"),
-				(drawingCanvas.getWidth()-48)/2, (drawingCanvas.getHeight()-48)/2, 48, 48);
-			return;
-		}
-
-		for(int i= 0; i < 15; i++){
-			for(int j= 0; j < 17; j++){
-				gc.drawImage(tileVec.get(i*17+j).getBack(), GameController.canvasXOffset+40*j,
-					GameController.canvasYOffset+40*i, 40, 40);
-				gc.drawImage(tileVec.get(i*17+j).getFront(), GameController.canvasXOffset+40*j,
-					GameController.canvasYOffset+40*i, 40, 40);
-			}
-		}//Draw Obs and Background
-
-		for(int i= 0; i < 15; i++){
-			for(int j= 0; j < 17; j++){
-				if(tileVec.get(i*17+j).getObs() != 4){//Bush
-					if(tileVec.get(i*17+j).getBombStatus() == 1)
-						gc.drawImage(pic, GameController.canvasXOffset+40*j,
-								GameController.canvasYOffset+40*i, 40, 40);
-
-					if (tileVec.get(i*17+j).getBombStatus() == -1)
-						gc.drawImage(up, GameController.canvasXOffset+40*j,
-								GameController.canvasYOffset+40*i, 40, 40);
-
-					if (tileVec.get(i*17+j).getBombStatus() == -2)
-						gc.drawImage(down, GameController.canvasXOffset+40*j,
-								GameController.canvasYOffset+40*i, 40, 40);
-
-					if (tileVec.get(i*17+j).getBombStatus() == -3)
-						gc.drawImage(left, GameController.canvasXOffset+40*j,
-								GameController.canvasYOffset+40*i, 40, 40);
-
-					if (tileVec.get(i*17+j).getBombStatus() == -4)
-						gc.drawImage(right, GameController.canvasXOffset+40*j,
-								GameController.canvasYOffset+40*i, 40, 40);
-
-					if (tileVec.get(i*17+j).getBombStatus() == -5)
-						gc.drawImage(center, GameController.canvasXOffset+40*j,
-								GameController.canvasYOffset+40*i, 40, 40);
-				}
-			}
-		}//Draw Bomb
-	}
-
-//	public void drawMe(){
-//		GraphicsContext gb = drawingCanvas.getGraphicsContext2D();
-//		gb.drawImage(player.meImg, GameController.canvasXOffset+40*player.x,
-//			GameController.canvasYOffset+40*player.y, 40, 40);
-//	}
-
 
 	// public void drawBomb(){
 	// 	GraphicsContext gb = drawingCanvas.getGraphicsContext2D();

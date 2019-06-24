@@ -14,6 +14,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.KeyEvent;
@@ -25,22 +26,27 @@ import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public class GameController {
 	@FXML private Canvas drawingCanvas;
-	@FXML private Button obsTestBtn;
-	@FXML private Button kbTestBtn;
-	@FXML private Label fpsLabel;
-	@FXML private Slider fpsSlider;
-	@FXML private Label bombRangeLabel;
-	@FXML private Slider bombRangeSlider;
-	@FXML private Label volumeLabel;
-	@FXML private Slider volumeSlider;
+//	@FXML private Button obsTestBtn;
+//	@FXML private Button kbTestBtn;
+//	@FXML private Label fpsLabel;
+//	@FXML private Slider fpsSlider;
+//	@FXML private Label bombRangeLabel;
+//	@FXML private Slider bombRangeSlider;
+//	@FXML private Label volumeLabel;
+//	@FXML private Slider volumeSlider;
 	@FXML private Button settingsBtn;
 
+	@FXML private ImageView speedStat;
+	@FXML private ImageView powerStat;
+	@FXML private ImageView quantStat;
+
 	private Timer aniTimer=new Timer(true);
-	private CanvasRedrawTask<Player> task;
+	private CanvasRepaint<Player> task;
 	// @FXML private Button upBtn;
 	// @FXML private Button downBtn;
 	// @FXML private Button leftBtn;
@@ -54,7 +60,8 @@ public class GameController {
 
 	public static boolean inObsTest= true;
 	public static boolean inKBTest= true;
-	public static final Set<KeyCode> pressed = new HashSet<KeyCode>();
+//	public static final Set<KeyCode> pressed = new HashSet<KeyCode>();
+	public static final ArrayList<KeyCode> pressed = new ArrayList<KeyCode>();
 
 
 	public static int meX=1;
@@ -82,50 +89,28 @@ public class GameController {
 	public static double fxVolume= 1;
 
 	public void initialize() {
+		GraphicsContext gc = drawingCanvas.getGraphicsContext2D();
+		gc.setFill(Color.BLACK);
+		gc.fillRect(0,0,drawingCanvas.getWidth(),drawingCanvas.getHeight());
 
-//		for(int i= Player.CENTER; i<= Player.RIGHT; i++) {
-//			isPressed[i] = new SimpleBooleanProperty(false);
-//		}
-//		for(int i= Player.CENTER; i<= Player.RIGHT; i++){
-//			for (int j= Player.CENTER; j<= Player.RIGHT; j++){
-//				bothPressed[i][j]
-//						= isPressed[i].and(isPressed[j]);
-//			}
-//		}
-//		bothPressed[Player.UP][Player.LEFT].addListener(
-//			(obs, werePressed, arePressed) -> {
-//				System.out.println("UP + LEFT");
-//				System.out.println(arePressed ?"true":"false");
-//			}
-//		);
-//		bothPressed[Player.UP][Player.RIGHT].addListener(
-//			(obs, werePressed, arePressed) -> {
-//				System.out.println("UP + RIGHT");
-//			}
-//		);
-//		bothPressed[Player.DOWN][Player.LEFT].addListener(
-//			(obs, werePressed, arePressed) -> {
-//				System.out.println("DOWN + LEFT");
-//			}
-//		);
-//		bothPressed[Player.DOWN][Player.RIGHT].addListener(
-//			(obs, werePressed, arePressed) -> {
-//				System.out.println("DOWN + RIGHT");
-//			}
-//		);
+		speedStat.setImage(Item.SPEED[p1.speed]);
+		powerStat.setImage(Item.POWER[p1.power]);
+		quantStat.setImage(Item.QUANT[p1.quant]);
 
+		settingsBtn.setFocusTraversable(false);
 
 		p1.catchCanvas(drawingCanvas);
+		p1.catchImageViews(speedStat, powerStat, quantStat);
 		drawingCanvas.getParent().addEventFilter(KeyEvent.KEY_PRESSED,
 				event -> {
 					keyPressed(event);
-					event.consume();
+//					event.consume();
 				}
 		);
 		drawingCanvas.getParent().addEventFilter(KeyEvent.KEY_RELEASED,
 				event -> {
 					keyReleased(event);
-					event.consume();
+//					event.consume();
 				}
 		);
 
@@ -134,10 +119,10 @@ public class GameController {
 		loadDataFile("game/MapData.txt", "game/ObstacleData.txt", "game/BombsData.txt");
 		renderTiles();
 
-		p1.drawMe(drawingCanvas);
-		task = new CanvasRedrawTask<>(drawingCanvas) {
+		p1.drawMe();
+		task = new CanvasRepaint<>(drawingCanvas) {
 			@Override
-			public void redraw(GraphicsContext gc, Player player) {
+			public void repaint(GraphicsContext gc, Player player) {
 				renderTiles();
 				player.drawMe();
 			}
@@ -146,49 +131,49 @@ public class GameController {
 		aniTimer.schedule(new TimerTask() {
 			@Override
 			public void run() {
-				task.requestRedraw(p1);
+				task.requestRepaint(p1);
 			}
 		},0 , (int)(1./fps*1000));
 
-		fpsSlider.valueProperty().addListener(
-				(ov, oldValue, newValue) -> {
-					fps = newValue.intValue();
-					fpsLabel.setText("FPS: "+fps);
-					aniTimer.cancel();
-					aniTimer= new Timer(true);
-					aniTimer.schedule(new TimerTask() {
-						@Override
-						public void run() {
-							task.requestRedraw(p1);
-						}
-					},0,(int)(1./fps*1000));
-					System.out.println("Interval Updated= "+(int)(1./fps*1000));
-				}
-		);
-		fpsSlider.setValue(fps);
-
-		bombRangeSlider.valueProperty().addListener(
-				(ov, oldValue, newValue) -> {
-					int bombRange = newValue.intValue();
-					bombRangeLabel.setText("Bomb Range: "+bombRange);
-					p1.setPower(bombRange);
-					System.out.println("Bomb Range Updated: "+bombRange);
-				}
-		);
-
-		volumeSlider.valueProperty().addListener(
-				(ov, oldValue, newValue) -> {
-					int volPercent = newValue.intValue();
-					volumeLabel.setText("Media Volume: "+volPercent+"%");
-					volume= volPercent/100.0;
-
-					bgmPlayer.setVolume(0.6 * volume);
-					p1.resetFxPlayer();
-					p1.resetDeathFxPlayerPlayer();
-					System.out.println("Volume Updated: "+volume);
-				}
-		);
-		volumeSlider.setValue(volume*100);
+//		fpsSlider.valueProperty().addListener(
+//				(ov, oldValue, newValue) -> {
+//					fps = newValue.intValue();
+//					fpsLabel.setText("FPS: "+fps);
+//					aniTimer.cancel();
+//					aniTimer= new Timer(true);
+//					aniTimer.schedule(new TimerTask() {
+//						@Override
+//						public void run() {
+//							task.requestRedraw(p1);
+//						}
+//					},0,(int)(1./fps*1000));
+//					System.out.println("Interval Updated= "+(int)(1./fps*1000));
+//				}
+//		);
+//		fpsSlider.setValue(fps);
+//
+//		bombRangeSlider.valueProperty().addListener(
+//				(ov, oldValue, newValue) -> {
+//					int bombRange = newValue.intValue();
+//					bombRangeLabel.setText("Bomb Range: "+bombRange);
+//					p1.setPower(bombRange);
+//					System.out.println("Bomb Range Updated: "+bombRange);
+//				}
+//		);
+//
+//		volumeSlider.valueProperty().addListener(
+//				(ov, oldValue, newValue) -> {
+//					int volPercent = newValue.intValue();
+//					volumeLabel.setText("Media Volume: "+volPercent+"%");
+//					volume= volPercent/100.0;
+//
+//					bgmPlayer.setVolume(0.6 * volume);
+//					p1.resetFxPlayer();
+//					p1.resetDeathFxPlayerPlayer();
+//					System.out.println("Volume Updated: "+volume);
+//				}
+//		);
+//		volumeSlider.setValue(volume*100);
 
 		bgm= new Media(bgmFile.toURI().toString());
 		bgmPlayer= new MediaPlayer(bgm);
@@ -206,116 +191,116 @@ public class GameController {
 //	};
 
 
-	@FXML
-	private void obsTestBtnPressed(ActionEvent e) {
-		System.out.println("Player1 @("+p1.x+","+p1.y+"), abs= ("+p1.abs_x+","+p1.abs_y+")");
-		if(!inObsTest){
-			p1.abs_x= canvasXOffset+p1.x*40;
-			p1.abs_y= canvasYOffset+p1.y*40;
-			obsTestBtn.setStyle("-fx-border-color: RED; ");
-			obsTestBtn.setText("Stop");
-			inObsTest= true;
-		}
-		else{
-			obsTestBtn.setStyle("-fx-border-color: LIGHTGREEN; ");
-			obsTestBtn.setText("StartObsTest");
-			inObsTest= false;
-		}
-	}
-	@FXML
-	private void kbTestBtnPressed(ActionEvent e) {
-		if(!inKBTest){
-			kbTestBtn.setStyle("-fx-border-color: RED; ");
-			kbTestBtn.setText("Stop");
-			inKBTest= true;
-		}
-		else{
-			kbTestBtn.setStyle("-fx-border-color: LIGHTGREEN; ");
-			kbTestBtn.setText("StartKBTest");
-			inKBTest= false;
-		}
-	}
+//	@FXML
+//	private void obsTestBtnPressed(ActionEvent e) {
+//		System.out.println("Player1 @("+p1.x+","+p1.y+"), abs= ("+p1.abs_x+","+p1.abs_y+")");
+//		if(!inObsTest){
+//			p1.abs_x= canvasXOffset+p1.x*40;
+//			p1.abs_y= canvasYOffset+p1.y*40;
+//			obsTestBtn.setStyle("-fx-border-color: RED; ");
+//			obsTestBtn.setText("Stop");
+//			inObsTest= true;
+//		}
+//		else{
+//			obsTestBtn.setStyle("-fx-border-color: LIGHTGREEN; ");
+//			obsTestBtn.setText("StartObsTest");
+//			inObsTest= false;
+//		}
+//	}
+//	@FXML
+//	private void kbTestBtnPressed(ActionEvent e) {
+//		if(!inKBTest){
+//			kbTestBtn.setStyle("-fx-border-color: RED; ");
+//			kbTestBtn.setText("Stop");
+//			inKBTest= true;
+//		}
+//		else{
+//			kbTestBtn.setStyle("-fx-border-color: LIGHTGREEN; ");
+//			kbTestBtn.setText("StartKBTest");
+//			inKBTest= false;
+//		}
+//	}
 
-	@FXML
-	private void navBtnPressed(ActionEvent e) {
-		String eStr= e.getSource().toString();
-		if(eStr.contains("upBtn")){
-			System.out.println("\tUP");
-			if(tileVec.get(meX+17*(meY-1)).getObs()==-1)
-			{
-//				meX=meX;
-				meY=meY-1;
-				//print the character
-				renderTiles();
-				p1.drawMe(drawingCanvas);
-			}
-			else if(tileVec.get(meX+17*(meY-1)).getObs()==4)
-			{
-//				meX=meX;
-				meY=meY-1;
-				//print the character
-				renderTiles();
-//				drawMe(drawingCanvas);
-			}
-		}
-		else if(eStr.contains("downBtn")){
-			System.out.println("\tDOWN");
-			if(tileVec.get(meX+17*(meY+1)).getObs()==-1)
-			{
-//				meX=meX;
-				meY=meY+1;
-				//print the character
-				renderTiles();
-				p1.drawMe(drawingCanvas);
-			}
-			else if(tileVec.get(meX+17*(meY+1)).getObs()==4)
-			{
-//				meX=meX;
-				meY=meY+1;
-				//print the character
-				renderTiles();
-//				p1.drawMe(drawingCanvas);
-			}
-		}
-		else if(eStr.contains("leftBtn")){
-			System.out.println("\tLEFT");
-			if(tileVec.get(meX-1+17*meY).getObs()==-1)
-			{
-				meX=meX-1;
-//				meY=meY;
-				//print the character
-				renderTiles();
-				p1.drawMe(drawingCanvas);
-			}
-			else if(tileVec.get(meX-1+17*meY).getObs()==4)
-			{
-				meX=meX-1;
-//				meY=meY;
-				//print the character
-				renderTiles();
-//				p1.drawMe(drawingCanvas);
-			}
-		}
-		else if(eStr.contains("rightBtn")){
-			System.out.println("\tRIGHT");
-			if(tileVec.get(meX+1+17*meY).getObs()==-1)
-			{
-				meX=meX+1;
-//				meY=meY;
-				//print the character
-				renderTiles();
-				p1.drawMe(drawingCanvas);
-			}
-			else if(tileVec.get(meX+1+17*meY).getObs()==4)
-			{
-				meX=meX+1;
-//				meY=meY;
-				//print the character
-				renderTiles();
+//	@FXML
+//	private void navBtnPressed(ActionEvent e) {
+//		String eStr= e.getSource().toString();
+//		if(eStr.contains("upBtn")){
+//			System.out.println("\tUP");
+//			if(tileVec.get(meX+17*(meY-1)).getObs()==-1)
+//			{
+////				meX=meX;
+//				meY=meY-1;
+//				//print the character
+//				renderTiles();
 //				p1.drawMe();
-			}
-		}
-	}
+//			}
+//			else if(tileVec.get(meX+17*(meY-1)).getObs()==4)
+//			{
+////				meX=meX;
+//				meY=meY-1;
+//				//print the character
+//				renderTiles();
+////				drawMe(drawingCanvas);
+//			}
+//		}
+//		else if(eStr.contains("downBtn")){
+//			System.out.println("\tDOWN");
+//			if(tileVec.get(meX+17*(meY+1)).getObs()==-1)
+//			{
+////				meX=meX;
+//				meY=meY+1;
+//				//print the character
+//				renderTiles();
+//				p1.drawMe();
+//			}
+//			else if(tileVec.get(meX+17*(meY+1)).getObs()==4)
+//			{
+////				meX=meX;
+//				meY=meY+1;
+//				//print the character
+//				renderTiles();
+////				p1.drawMe(drawingCanvas);
+//			}
+//		}
+//		else if(eStr.contains("leftBtn")){
+//			System.out.println("\tLEFT");
+//			if(tileVec.get(meX-1+17*meY).getObs()==-1)
+//			{
+//				meX=meX-1;
+////				meY=meY;
+//				//print the character
+//				renderTiles();
+//				p1.drawMe();
+//			}
+//			else if(tileVec.get(meX-1+17*meY).getObs()==4)
+//			{
+//				meX=meX-1;
+////				meY=meY;
+//				//print the character
+//				renderTiles();
+////				p1.drawMe(drawingCanvas);
+//			}
+//		}
+//		else if(eStr.contains("rightBtn")){
+//			System.out.println("\tRIGHT");
+//			if(tileVec.get(meX+1+17*meY).getObs()==-1)
+//			{
+//				meX=meX+1;
+////				meY=meY;
+//				//print the character
+//				renderTiles();
+//				p1.drawMe();
+//			}
+//			else if(tileVec.get(meX+1+17*meY).getObs()==4)
+//			{
+//				meX=meX+1;
+////				meY=meY;
+//				//print the character
+//				renderTiles();
+////				p1.drawMe();
+//			}
+//		}
+//	}
 
 	@FXML
 	private void settingsBtnPressed(ActionEvent e) throws Exception {
@@ -329,7 +314,8 @@ public class GameController {
 		stage.show();
 	}
 
-	public void keyPressed(KeyEvent e) {
+//	@FXML
+	private void keyPressed(KeyEvent e) {
 		//System.out.println("keyPressed()");
 		if(!inKBTest)
 			return;
@@ -432,6 +418,7 @@ public class GameController {
 //			p1.drawMe(drawingCanvas);
 	}
 
+//	@FXML
 	private void keyReleased(KeyEvent e) {
 		if(!inKBTest)
 			return;
@@ -440,6 +427,7 @@ public class GameController {
 		p1.checkAround();
 		if(pressed.isEmpty()) {
 			p1.stopMoveTimer();
+			p1.nowDir=0;
 			System.out.println("NO KEYS");
 		}
 //		switch (e.getCode()) {
@@ -501,7 +489,7 @@ public class GameController {
 	}
 
 
-	public void loadDataFile(String mapDataAddress, String obstacleDataAddress, String bombsDataAddress){
+	private void loadDataFile(String mapDataAddress, String obstacleDataAddress, String bombsDataAddress){
 		mapDataStr= readFile(mapDataAddress);
 		obstacleDataStr= readFile(obstacleDataAddress);
 		bombsDataStr= readFile(bombsDataAddress);
@@ -520,9 +508,11 @@ public class GameController {
 
 		for(int i=0; i<15; i++){
 			for(int j=0; j<17; j++){
+				int temp;
 				tileVec.add(new Tile(mapScanner.nextInt(), mapScanner.nextInt()));
 				tileVec.lastElement().setObs(obsScanner.nextInt());
-				tileVec.lastElement().setBombStatus(bombScanner.nextInt());
+				tileVec.lastElement().setBombStatus(temp= bombScanner.nextInt());
+				tileVec.lastElement().setItemStatus(temp);
 			}
 		}
 	}
@@ -539,8 +529,11 @@ public class GameController {
 			for(int j= 0; j < 17; j++){
 				gc.drawImage(tileVec.get(i*17+j).getBack(), canvasXOffset+40*j, canvasYOffset+40*i, 40, 40);
 				gc.drawImage(tileVec.get(i*17+j).getFront(), canvasXOffset+40*j, canvasYOffset+40*i, 40, 40);
+				gc.drawImage(tileVec.get(i*17+j).getItemPic(), canvasXOffset+40*j, canvasYOffset+40*i, 40, 40);
+
 			}
 		}//Draw Obs and Background
+		//Draw Item
 
 		for(int i= 0; i < 15; i++){
 			for(int j= 0; j < 17; j++){
@@ -571,6 +564,8 @@ public class GameController {
 				}
 			}
 		}//Draw Bomb
+
+
 	}
 
 	public static WritableImage getTile(int idX, int idY){
@@ -610,12 +605,34 @@ public class GameController {
 		}
 	}
 
-	public static String readFile(String filePath) {
+	public static Image getItemPic(int id){
+		Image rtnImg;
+		switch (id) {
+			case 0:
+			case -1:
+			case 9:
+			case 4:
+				rtnImg= new Image("image/blank.png");
+				return rtnImg;
+			case 1:
+				rtnImg= new Image("image/SHOES.png");
+				return rtnImg;
+			case 2:
+				rtnImg= new Image("image/POTION.png");
+				return rtnImg;
+			case 3:
+				rtnImg= new Image("image/ADDBALLOON.png");
+				return rtnImg;
+			default:
+				rtnImg= new Image("image/Error.png");
+				return rtnImg;
+		}
+	}
+
+	private static String readFile(String filePath) {
         StringBuilder contentBuilder = new StringBuilder();
 
-        try (
-			Stream<String> stream = Files.lines( Paths.get(filePath) );
-		){
+        try ( Stream<String> stream = Files.lines( Paths.get(filePath)) ){
         	stream.forEach(s -> contentBuilder.append(s).append("\n"));
         }
         catch (IOException e)

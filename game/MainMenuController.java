@@ -33,11 +33,11 @@ public class MainMenuController {
 
 	private File selectionFile = new File("audio/FX/sfx_menu_move2.wav");
 	private Media selection= new Media(selectionFile.toURI().toString());
-	private MediaPlayer selectionPlayer;
-	private MediaPlayer selectionPlayer2;
+	public static MediaPlayer selectionPlayer;
+	public static MediaPlayer selectionPlayer2;
 	private File enterFile = new File("audio/FX/sfx_menu_select2.wav");
 	private Media enter= new Media(enterFile.toURI().toString());
-	private MediaPlayer enterPlayer;
+	public static MediaPlayer enterPlayer;
 
 
 	public static double volume= 1;
@@ -93,6 +93,10 @@ public class MainMenuController {
 		Stage stage= new Stage();
 		stage.setTitle("Settings");
 		stage.setScene(scene);
+		stage.setOnCloseRequest(we -> {
+			System.out.println("Setting cancelled");
+			musicPlayer.setVolume(SettingsController.defaultVol);
+		});
 		stage.show();
 	}
 

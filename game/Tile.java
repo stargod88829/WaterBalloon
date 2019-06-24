@@ -7,15 +7,15 @@ public class Tile {
 	private int y;
 	private int obs;
 	private int bombStat;
+	private int itemStat;
 	private Image back;
 	private Image front;
+	private Image itemPic;
 
 	Tile(){x=0; y=0;}
 	Tile(int num){x= num; y=num; back= GameController.getTile(x,y);}
 	Tile(int x, int y){this.x= x; this.y= y; back= GameController.getTile(this.x,this.y);}
 
-	public int getX(){return x;}
-	public int getY(){return y;}
 	public Image getBack(){return back;}
 	public void setBack(Image bg){back= bg;}
 
@@ -32,4 +32,9 @@ public class Tile {
 	//Explosion:
 	// -1: Up, -2: Down, -3:Left, -4: Right, -5: Center
 	public void setBombStatus(int num){bombStat= num;}
+
+	public int getItemStatus(){return itemStat;}
+	//0: Nothing, 1: Speed, 2: Power, 3: Quantity, 4:Nothing
+	public void setItemStatus(int num){itemStat= num; itemPic= GameController.getItemPic(num);}
+	public Image getItemPic(){return itemPic;}
 }
