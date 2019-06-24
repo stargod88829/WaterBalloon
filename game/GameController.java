@@ -7,6 +7,8 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Stream;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
@@ -28,6 +30,7 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 public class GameController {
 	@FXML private Canvas drawingCanvas;
@@ -39,11 +42,18 @@ public class GameController {
 //	@FXML private Slider bombRangeSlider;
 //	@FXML private Label volumeLabel;
 //	@FXML private Slider volumeSlider;
-	@FXML private Button settingsBtn;
+	@FXML private Label cdTimerLabel;
+	@FXML private Label counterLabel;
+	@FXML private Label lifeLeftLabel;
+
+	private Timeline cdTimer;
+	private int timeLeft=180;
 
 	@FXML private ImageView speedStat;
 	@FXML private ImageView powerStat;
 	@FXML private ImageView quantStat;
+
+	@FXML private Button settingsBtn;
 
 	private Timer aniTimer=new Timer(true);
 	private CanvasRepaint<Player> task;
@@ -181,6 +191,21 @@ public class GameController {
 		bgmPlayer.setAutoPlay(true);
 		bgmPlayer.setCycleCount(MediaPlayer.INDEFINITE);
 
+		cdTimerLabel.setText(""+timeLeft);
+		cdTimer = new Timeline();
+		cdTimer.setCycleCount(Timeline.INDEFINITE);
+		cdTimer.getKeyFrames().add(
+			new KeyFrame(Duration.seconds(1),
+					(e) -> {
+						timeLeft--;
+						cdTimerLabel.setText(""+timeLeft);
+						if (timeLeft <= 0) {
+							cdTimer.stop();
+						}
+					}
+			)
+		);
+		cdTimer.playFromStart();
 	}
 
 //	ChangeListener<Boolean> boolHandler= new ChangeListener<Boolean>() {

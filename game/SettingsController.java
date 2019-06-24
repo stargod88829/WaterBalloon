@@ -156,7 +156,10 @@ public class SettingsController extends MainMenuController{
 	@FXML
 	private void okPressed(ActionEvent e){
 		GameController.volume= volume;
+		GameController.bgmPlayer.setVolume(volume);
 		GameController.fxVolume= fxVolume;
+		Player.fxPlayer.setVolume(fxVolume);
+		Player.itemFxPlayer.setVolume(fxVolume);
 		GameController.fps= fps;
 		MainMenuController.selectionPlayer.setVolume(fxVolume);
 		MainMenuController.selectionPlayer2.setVolume(fxVolume);

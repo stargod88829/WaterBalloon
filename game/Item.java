@@ -14,6 +14,8 @@ public class Item extends Tile{
 	private Player player;
 	private Vector<Tile> tileVec;
 
+
+
 	public static final Image[] SPEED = {
 			new Image("image/Error.png"),
 			new Image("image/Skills/Speed_1.png"),

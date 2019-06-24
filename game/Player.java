@@ -77,7 +77,11 @@ public class Player{
 
 	File fxFile = new File("audio/FX/sfx_movement_footsteps5.wav");
 	private Media fx;
-	private MediaPlayer fxPlayer;
+	public static MediaPlayer fxPlayer;
+
+	File itemFxFile = new File("audio/FX/sfx_coin_double5.wav");
+	private Media itemFx;
+	public static MediaPlayer itemFxPlayer;
 
 	File deathFxFile = new File("audio/FX/sfx_lowhealth_alarmloop5.wav");
 	private Media deathFx;
@@ -115,6 +119,10 @@ public class Player{
 		fx= new Media(fxFile.toURI().toString());
 		fxPlayer= new MediaPlayer(fx);
 		fxPlayer.setVolume(GameController.fxVolume);
+
+		itemFx= new Media(itemFxFile.toURI().toString());
+		itemFxPlayer= new MediaPlayer(itemFx);
+		itemFxPlayer.setVolume(GameController.fxVolume);
 
 		deathFx= new Media(deathFxFile.toURI().toString());
 		deathFxPlayer= new MediaPlayer(deathFx);
@@ -718,6 +726,8 @@ public class Player{
 							break;
 					}
 					speedStat.setImage(Item.SPEED[speed]);
+					itemFxPlayer.seek(Duration.ZERO);
+					itemFxPlayer.play();
 					System.out.println("\t\t###Speed up= "+speed);
 				}
 				GameController.tileVec.get(x+17*y).setItemStatus(0);
@@ -725,6 +735,8 @@ public class Player{
 				if(power<5) {
 					power++;
 					powerStat.setImage(Item.POWER[power]);
+					itemFxPlayer.seek(Duration.ZERO);
+					itemFxPlayer.play();
 					System.out.println("\t\t###Power up= "+power);
 				}
 				GameController.tileVec.get(x+17*y).setItemStatus(0);
@@ -733,6 +745,8 @@ public class Player{
 				if(quant<5) {
 					quant++;
 					quantStat.setImage(Item.QUANT[quant]);
+					itemFxPlayer.seek(Duration.ZERO);
+					itemFxPlayer.play();
 					System.out.println("\t\t###Quant up= "+quant);
 				}
 				GameController.tileVec.get(x+17*y).setItemStatus(0);
