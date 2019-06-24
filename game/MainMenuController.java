@@ -27,6 +27,10 @@ public class MainMenuController {
 	@FXML private Label quitLabel;
 	@FXML private Rectangle quitBtn;
 
+	public static Stage stage2;
+	public static Stage self;
+	public static boolean started= false;
+
 	private File musicFile = new File("audio/BGM/2019-01-02_-_8_Bit_Menu_-_David_Renda_-_FesliyanStudios.com.mp3");
 	private Media music;
 	public static MediaPlayer musicPlayer;
@@ -43,6 +47,7 @@ public class MainMenuController {
 	public static double volume= 1;
 
 	public void initialize() {
+//		GameController.bgmPlayer.stop();
 		music= new Media(musicFile.toURI().toString());
 		musicPlayer= new MediaPlayer(music);
 		musicPlayer.setVolume(volume);
@@ -56,6 +61,7 @@ public class MainMenuController {
 		enterPlayer= new MediaPlayer(enter);
 		enterPlayer.setVolume(GameController.fxVolume);
 
+		stage2= new Stage();
 	}
 
 	@FXML
@@ -66,11 +72,12 @@ public class MainMenuController {
 				FXMLLoader.load(getClass().getResource("MainGame.fxml"));
 
 		Scene scene = new Scene(root);
-		Stage stage= new Stage();
-		Stage self = (Stage) startBtn.getScene().getWindow();
-		stage.setTitle("GameWindow");
-		stage.setScene(scene);
-		stage.setOnCloseRequest(we -> {
+
+		self = (Stage) startBtn.getScene().getWindow();
+
+		stage2.setTitle("GameWindow");
+		stage2.setScene(scene);
+		stage2.setOnCloseRequest(we -> {
 			System.out.println("Game is closed");
 			GameController.bgmPlayer.stop();
 			musicPlayer.play();
@@ -78,8 +85,10 @@ public class MainMenuController {
 			self.show();
 		});
 		musicPlayer.stop();
-		stage.show();
+		started=true;
+		stage2.show();
 		self.hide();
+
 	}
 
 	@FXML

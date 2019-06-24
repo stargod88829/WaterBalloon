@@ -82,8 +82,10 @@ public class Bomb extends Tile{
 
 				tileVec.get((y-i)*17+x).setObs(-1);
 				tileVec.get((y-i)*17+x).setBombStatus(-1);
-				if(tempObsStat!=-1)
-					tileVec.get((y-i)*17+x).setItemStatus(rand.nextInt(5));
+				if(tempObsStat!=-1) {
+					tileVec.get((y - i) * 17 + x).setItemStatus(rand.nextInt(5));
+					player.countItem++;
+				}
 				destroyedTileVec.add((y-i)*17+x);
 			}
 
@@ -101,8 +103,10 @@ public class Bomb extends Tile{
 
 				tileVec.get((y+i)*17+x).setObs(-1);
 				tileVec.get((y+i)*17+x).setBombStatus(-1);
-				if(tempObsStat!=-1)
-					tileVec.get((y+i)*17+x).setItemStatus(rand.nextInt(5));
+				if(tempObsStat!=-1) {
+					tileVec.get((y + i) * 17 + x).setItemStatus(rand.nextInt(5));
+					player.countItem++;
+				}
 				destroyedTileVec.add((y+i)*17+x);
 			}
 
@@ -121,8 +125,10 @@ public class Bomb extends Tile{
 
 				tileVec.get(y*17+(x-i)).setObs(-1);
 				tileVec.get(y*17+(x-i)).setBombStatus(-1);
-				if(tempObsStat!=-1)
-					tileVec.get(y*17+(x-i)).setItemStatus(rand.nextInt(5));
+				if(tempObsStat!=-1) {
+					tileVec.get(y * 17 + (x - i)).setItemStatus(rand.nextInt(5));
+					player.countItem++;
+				}
 				destroyedTileVec.add(y*17+(x-i));
 			}
 
@@ -141,8 +147,10 @@ public class Bomb extends Tile{
 
 				tileVec.get(y*17+(x+i)).setObs(-1);
 				tileVec.get(y*17+(x+i)).setBombStatus(-1);
-				if(tempObsStat!=-1)
-					tileVec.get(y*17+(x+i)).setItemStatus(rand.nextInt(5));
+				if(tempObsStat!=-1) {
+					tileVec.get(y * 17 + (x + i)).setItemStatus(rand.nextInt(5));
+					player.countItem++;
+				}
 				destroyedTileVec.add(y*17+(x+i));
 			}
 

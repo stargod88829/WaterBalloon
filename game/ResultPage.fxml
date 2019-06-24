@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox alignment="TOP_CENTER" prefHeight="399.0" prefWidth="516.0" style="-fx-background-color: black;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="game.ResultController">
+   <children>
+      <Label prefHeight="70.0" prefWidth="301.0" text="Game Over !" textAlignment="CENTER" textFill="#ca9263">
+         <font>
+            <Font name="Comic Sans MS Bold" size="50.0" />
+         </font>
+         <VBox.margin>
+            <Insets bottom="10.0" top="30.0" />
+         </VBox.margin>
+      </Label>
+      <Label fx:id="scoreLabel" alignment="CENTER" text="You've gained : points" textAlignment="CENTER" textFill="#dfad63">
+         <font>
+            <Font name="System Bold Italic" size="30.0" />
+         </font>
+         <VBox.margin>
+            <Insets bottom="10.0" top="10.0" />
+         </VBox.margin>
+      </Label>
+      <Label fx:id="hsLabel" text="New Highscore !" textFill="#d8c38f">
+         <VBox.margin>
+            <Insets bottom="10.0" />
+         </VBox.margin>
+         <font>
+            <Font name="Calibri Bold" size="21.0" />
+         </font>
+      </Label>
+      <ImageView fx:id="imgView" fitHeight="128.0" fitWidth="152.0" pickOnBounds="true" preserveRatio="true">
+         <VBox.margin>
+            <Insets bottom="20.0" top="30.0" />
+         </VBox.margin>
+      </ImageView>
+      <Button fx:id="okBtn" mnemonicParsing="false" onAction="#okClicked" prefHeight="39.0" prefWidth="165.0" text="OK">
+         <VBox.margin>
+            <Insets bottom="20.0" top="20.0" />
+         </VBox.margin>
+      </Button>
+   </children>
+</VBox>

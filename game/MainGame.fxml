@@ -24,7 +24,7 @@
                   <Insets top="20.0" />
                </VBox.margin>
             </Label>
-            <Label fx:id="cdTimerLabel" text="?" textAlignment="CENTER" textFill="WHITE">
+            <Label fx:id="cdTimerLabel" text="180" textAlignment="CENTER" textFill="WHITE">
                <font>
                   <Font name="Comic Sans MS" size="33.0" />
                </font>

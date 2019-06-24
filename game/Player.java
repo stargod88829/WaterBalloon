@@ -1,8 +1,15 @@
 package game;
 
+import java.awt.*;
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Vector;
+
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -12,6 +19,7 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyCode;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.util.Timer;
@@ -36,9 +44,12 @@ public class Player{
 	public int x;
 	public int y;
 
+	private Boolean flag=false;
+
 	public int speed=2;
 	public int power=1;
 	public int quant=2;
+	public static int lifeLeft=3;
 
 	public Image meImg;
 	private static Image foxChar_L= new Image("image/fox-run-alt.png");
@@ -61,6 +72,10 @@ public class Player{
 	private ImageView speedStat;
 	private ImageView powerStat;
 	private ImageView quantStat;
+	private Label lifeLeftLabel;
+	private Label counterLabel;
+
+	public static int countItem=0;
 
 	public double abs_x;
 	public double abs_y;
@@ -86,6 +101,7 @@ public class Player{
 	File deathFxFile = new File("audio/FX/sfx_lowhealth_alarmloop5.wav");
 	private Media deathFx;
 	private MediaPlayer deathFxPlayer;
+
 
 	Player(int x, int y, Image meImg){
 		this.x= x;
@@ -797,6 +813,10 @@ public class Player{
 		bombStatus[LEFTDOWN]= GameController.tileVec.get(x-1+17*(y+1)).getBombStatus();
 		bombStatus[RIGHTUP]= GameController.tileVec.get(x+1+17*(y-1)).getBombStatus();
 		bombStatus[RIGHTDOWN]= GameController.tileVec.get(x+1+17*(y+1)).getBombStatus();
+
+		if(bombStatus[CENTER]==0){
+			flag=false;
+		}
 	}
 
 	public void drawMe(){
@@ -808,6 +828,33 @@ public class Player{
 					x=1; y=1;
 					abs_x= GameController.canvasXOffset+x*40;
 					abs_y= GameController.canvasYOffset+y*40;
+
+
+					if(!flag){
+						lifeLeft--;
+						lifeLeftLabel.setText("❤ × "+lifeLeft);
+						if(lifeLeft<=0){
+							try {
+								Parent root =
+										FXMLLoader.load(getClass().getResource("ResultPage.fxml"));
+								Scene scene = new Scene(root);
+								Stage stage= new Stage();
+								stage.setTitle("Result");
+								stage.setScene(scene);
+								GameController.bgmPlayer.stop();
+								stage.show();
+								MainMenuController.stage2.close();
+							}
+							catch(Exception ex) {
+								try {
+									throw ex;
+								} catch (IOException exc) {
+									exc.printStackTrace();
+								}
+							}
+						}
+					}
+					flag=true;
 				}
 				gb.drawImage(charFrames.elementAt(frameCount), abs_x, abs_y, 40, 40);
 			}
@@ -825,6 +872,31 @@ public class Player{
 				x=1; y=1;
 				abs_x= GameController.canvasXOffset+x*40;
 				abs_y= GameController.canvasYOffset+y*40;
+				if(!flag){
+					lifeLeft--;
+					lifeLeftLabel.setText("❤ × "+lifeLeft);
+					if(lifeLeft<=0){
+						try {
+							Parent root =
+									FXMLLoader.load(getClass().getResource("ResultPage.fxml"));
+							Scene scene = new Scene(root);
+							Stage stage= new Stage();
+							stage.setTitle("Result");
+							stage.setScene(scene);
+							GameController.bgmPlayer.stop();
+							stage.show();
+							MainMenuController.stage2.close();
+						}
+						catch(Exception ex) {
+							try {
+								throw ex;
+							} catch (IOException exc) {
+								exc.printStackTrace();
+							}
+						}
+					}
+				}
+				flag=true;
 			}
 			gb.drawImage(bushAlt, GameController.canvasXOffset+40*x, GameController.canvasYOffset+40*y, 40, 40);
 
@@ -840,6 +912,11 @@ public class Player{
 		this.speedStat= speedStat;
 		this.powerStat= powerStat;
 		this.quantStat= quantStat;
+	}
+
+	public void catchLabels(javafx.scene.control.Label counterLabel, javafx.scene.control.Label lifeLeftLabel){
+		this.counterLabel= counterLabel;
+		this.lifeLeftLabel= lifeLeftLabel;
 	}
 
 	public int getBombCount() {

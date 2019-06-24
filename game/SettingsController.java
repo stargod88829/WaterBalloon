@@ -24,6 +24,12 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -31,6 +37,7 @@ public class SettingsController extends MainMenuController{
 	@FXML private Slider bgmSlider;
 	@FXML private Slider fxSlider;
 	@FXML private ComboBox fpsSelect;
+	@FXML private Button rstBtn;
 	@FXML private Button okBtn;
 	@FXML private Label fxLabel;
 	@FXML private ImageView muteIcon;
@@ -155,17 +162,35 @@ public class SettingsController extends MainMenuController{
 
 	@FXML
 	private void okPressed(ActionEvent e){
-		GameController.volume= volume;
-		GameController.bgmPlayer.setVolume(volume);
-		GameController.fxVolume= fxVolume;
-		Player.fxPlayer.setVolume(fxVolume);
-		Player.itemFxPlayer.setVolume(fxVolume);
-		GameController.fps= fps;
+		if(MainMenuController.started){
+			GameController.volume= volume;
+			GameController.bgmPlayer.setVolume(volume);
+			GameController.fxVolume= fxVolume;
+			Player.fxPlayer.setVolume(fxVolume);
+			Player.itemFxPlayer.setVolume(fxVolume);
+			GameController.fps= fps;
+		}
 		MainMenuController.selectionPlayer.setVolume(fxVolume);
 		MainMenuController.selectionPlayer2.setVolume(fxVolume);
 		MainMenuController.enterPlayer.setVolume(fxVolume);
 		Stage stage = (Stage) okBtn.getScene().getWindow();
 		stage.close();
+	}
+
+	@FXML
+	private void rstPressed(ActionEvent e){
+		PrintWriter writer = null;
+		try {
+			writer = new PrintWriter(new File("game/HS.txt"));
+		} catch (FileNotFoundException ex) {
+			ex.printStackTrace();
+		}
+		if (writer != null) {
+			writer.print("");
+		}
+		if (writer != null) {
+			writer.close();
+		}
 	}
 
 

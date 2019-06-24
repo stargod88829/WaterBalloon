@@ -47,7 +47,8 @@ public class GameController {
 	@FXML private Label lifeLeftLabel;
 
 	private Timeline cdTimer;
-	private int timeLeft=180;
+	private int timeLeft=120;
+
 
 	@FXML private ImageView speedStat;
 	@FXML private ImageView powerStat;
@@ -111,6 +112,11 @@ public class GameController {
 
 		p1.catchCanvas(drawingCanvas);
 		p1.catchImageViews(speedStat, powerStat, quantStat);
+		p1.catchLabels(counterLabel,lifeLeftLabel);
+
+		Player.countItem=0;
+		Player.lifeLeft=3;
+
 		drawingCanvas.getParent().addEventFilter(KeyEvent.KEY_PRESSED,
 				event -> {
 					keyPressed(event);
@@ -135,6 +141,7 @@ public class GameController {
 			public void repaint(GraphicsContext gc, Player player) {
 				renderTiles();
 				player.drawMe();
+				counterLabel.setText(""+player.countItem);
 			}
 		};
 
@@ -196,11 +203,33 @@ public class GameController {
 		cdTimer.setCycleCount(Timeline.INDEFINITE);
 		cdTimer.getKeyFrames().add(
 			new KeyFrame(Duration.seconds(1),
-					(e) -> {
+					(ActionEvent e) -> {
 						timeLeft--;
 						cdTimerLabel.setText(""+timeLeft);
 						if (timeLeft <= 0) {
 							cdTimer.stop();
+							bgmPlayer.stop();
+							try {
+								Parent root =
+										FXMLLoader.load(getClass().getResource("ResultPage.fxml"));
+								Scene scene = new Scene(root);
+								Stage stage= new Stage();
+								stage.setTitle("Result");
+								stage.setScene(scene);
+								stage.show();
+								MainMenuController.stage2.close();
+							}
+							catch(Exception ex) {
+								try {
+									throw ex;
+								} catch (IOException exc) {
+									exc.printStackTrace();
+								}
+							}
+//							MainMenuController.musicPlayer.play();
+//							MainMenuController.musicPlayer.setCycleCount(MediaPlayer.INDEFINITE);
+//							MainMenuController.self.show();
+//							MainMenuController.stage2.close();
 						}
 					}
 			)
@@ -514,7 +543,7 @@ public class GameController {
 	}
 
 
-	private void loadDataFile(String mapDataAddress, String obstacleDataAddress, String bombsDataAddress){
+	protected void loadDataFile(String mapDataAddress, String obstacleDataAddress, String bombsDataAddress){
 		mapDataStr= readFile(mapDataAddress);
 		obstacleDataStr= readFile(obstacleDataAddress);
 		bombsDataStr= readFile(bombsDataAddress);
@@ -654,7 +683,7 @@ public class GameController {
 		}
 	}
 
-	private static String readFile(String filePath) {
+	protected String readFile(String filePath) {
         StringBuilder contentBuilder = new StringBuilder();
 
         try ( Stream<String> stream = Files.lines( Paths.get(filePath)) ){
